@@ -1,5 +1,9 @@
 TUIOdroid for Android Changelog
 
+v0.8 29.03.2011
+---------------
+* Option for screen orientation 
+
 v0.7 29.03.2011
 ---------------
 * TUIO 1.1 source message

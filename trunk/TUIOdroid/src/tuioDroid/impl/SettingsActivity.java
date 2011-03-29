@@ -25,9 +25,11 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 
@@ -62,6 +64,14 @@ public class SettingsActivity extends Activity{
 	        boolean drawAdditionalInfo = getIntent().getExtras().getBoolean("ExtraInfo");
 	        checker_Info.setChecked(drawAdditionalInfo);
 
+	        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+	        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.orientation_array, android.R.layout.simple_spinner_item);
+	        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	        
+	        spinner.setAdapter(adapter);
+	        spinner.setSelection(getIntent().getExtras().getInt("ScreenOrientation"));
+	       
+	     
 	    }
 
 	 
@@ -79,7 +89,9 @@ public class SettingsActivity extends Activity{
 	           responseIntent.putExtra("IP",((TextView) findViewById(R.id.et_IP)).getText().toString());
 	           responseIntent.putExtra("Port", ((TextView) findViewById(R.id.et_Port)).getText().toString());
 	           responseIntent.putExtra("ExtraInfo", ((CheckBox)findViewById(R.id.checkB_ExtraInfo)).isChecked());
-	           
+	           responseIntent.putExtra("ScreenOrientation",  ((Spinner) (findViewById(R.id.spinner))).getSelectedItemPosition());
+
+	          
 	           /*Setting result for this activity */
 	           setResult(RESULT_OK, responseIntent);
 	           
