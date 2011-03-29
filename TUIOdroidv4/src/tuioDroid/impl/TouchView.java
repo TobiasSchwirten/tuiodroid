@@ -1,7 +1,26 @@
+/*
+ TUIOdroid http://www.tuio.org/
+ An Open Source TUIO Tracker for Android
+ (c) 2011 by Tobias Schwirten and Martin Kaltenbrunner
+ 
+ TUIOdroid is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ TUIOdroid is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with TUIOdroid.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package tuioDroid.impl;
 
 import java.util.ArrayList;
-import java.util.List;
+
 
 import com.illposed.osc.OSCBundle;
 import com.illposed.osc.OSCMessage;
@@ -19,17 +38,16 @@ import android.view.SurfaceView;
 
 /**
  * Main View
- * @author T.Schwirten
+ * @author Tobias Schwirten
+ * @author Martin Kaltenbrunner
  */
 public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private static final int MAX_TOUCHPOINTS = 10;
 	private Paint textPaint = new Paint();
-	private Paint touchPaints[] = new Paint[MAX_TOUCHPOINTS];
-	private int colors[] = new int[MAX_TOUCHPOINTS];
+	private Paint touchPaint = new Paint();
 
 	private ArrayList<TuioPoint> tuioPoints;
-	
 	
 	private int width, height;
 	private float scale = 1.0f;
@@ -40,33 +58,38 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private boolean drawAdditionalInfo;
 	
+	private String sourceName;
+	private int sessionId = 0;
 	
-
+	private long startTime;
 
 	/**
 	 * Constructor
 	 * @param context
+	 * @param devIP
 	 * @param oscIP
 	 * @param oscPort
 	 */
-	public TouchView(Context context, String oscIP, int oscPort, boolean drawAdditionalInfo) {
+	public TouchView(Context context, String devIP, String oscIP, int oscPort, boolean drawAdditionalInfo) {
 		super(context, null);
 		oscInterface  = new OSCInterface(oscIP , oscPort);
 		this.drawAdditionalInfo = drawAdditionalInfo;
-	
-		tuioPoints = new ArrayList<TuioPoint>();
+		startTime = System.currentTimeMillis();
 		
+		tuioPoints = new ArrayList<TuioPoint>();
+		sourceName = "TUIOdroid@"+devIP;
 		SurfaceHolder holder = getHolder();
 		holder.addCallback(this);
 		setFocusable(true); // make sure we get key events
 		setFocusableInTouchMode(true); // make sure we get touch events
-		initPaints();
+		
+		textPaint.setColor(Color.LTGRAY);
+		touchPaint.setColor(Color.BLUE);
+		touchPaint.setStrokeWidth(2);
+		touchPaint.setStyle(Style.FILL);
+		touchPaint.setAntiAlias(true);
+		touchPaint.setAlpha(150);
 	}
-	
-	
-
-
-
 	
 	/**
 	 * Is called if a touch events occurs
@@ -74,7 +97,9 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 
-		printPointerInfo(event);
+		long timeStamp = System.currentTimeMillis() - startTime;
+		
+		//printPointerInfo(event);
 		cw = getWidth();
 		ch = getHeight();
 		Canvas c = getHolder().lockCanvas();
@@ -84,80 +109,88 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		if (pointerCount > MAX_TOUCHPOINTS) {
 			pointerCount = MAX_TOUCHPOINTS;
 		}
-		
-		
-		
+			
 		if (c != null) {
 			c.drawColor(Color.BLACK);
 			
-			if (event.getAction() == MotionEvent.ACTION_UP) {
-				System.out.println("REMOVED " + event.getPointerCount());
-				sendTUIOdata(new ArrayList<TuioPoint>() );
+			if (event.getAction() == MotionEvent.ACTION_UP) {				
+	
+				if(event.getPointerCount() == 1) {
+					// PointerCount is always >= 1, 
+					// so if ACTION_UP and PointerCount==1, 
+					// all Pointers are gone
+					tuioPoints.clear(); 
+				} 
 				
-				
-				
-				if(event.getPointerCount() == 1){ //Pointer Count is always >= 1, so if Action up event and pointer count ==1, all pointer gone
-					tuioPoints.clear();
+			} else {
+			
+				// clear removed Points				
+				for (int i = 0; i < tuioPoints.size(); i++) {
+					
+					boolean pointStillAlive = false;		
+					for(int j=0; j<event.getPointerCount(); j++){
+						
+						//android.util.Log.v("compare",event.getPointerId(j)+" "+tuioPoints.get(i).getTouchId());
+						
+						if(event.getPointerId(j) == tuioPoints.get(i).getTouchId()){
+							pointStillAlive = true;
+							break;
+						}	
+					}
+					
+					if (pointStillAlive == false){
+						tuioPoints.remove(i);
+						i=0;
+					}
 				}
-				else{
-					// clear removed Points				
-					for (int i = 0; i < tuioPoints.size(); i++) {
-						
-						boolean pointStillAlive = false;
-						
-						for(int j=0; j<event.getPointerCount(); j++){
-							
-							if(event.getPointerId(j) == tuioPoints.get(i).getId()){
-								pointStillAlive = true;
-								j = event.getPointerCount();
-							}	
-						}
-						
-						
-						if(pointStillAlive == false){
-							tuioPoints.remove(i);
-						}
-					}	
-				}
 				
-				
-				
-			}
-			
-			
-			else {
-			
+				// update existing Points
 				for (int i = 0; i < pointerCount; i++) {
 					
 					int id = event.getPointerId(i);
-					int x = (int) event.getX(i);
-					int y = (int) event.getY(i);
-					drawPointer(x, y, touchPaints[id], i, id, c, event);
+					float x = event.getX(i);
+					float y = event.getY(i);
 					
-					if(this.drawAdditionalInfo){
-						drawInformation(x,y,i,c);
-					}
-					
-					/* Check if this id already exists */
+					c.drawLine(0, y, width, y, touchPaint);
+					c.drawLine(x, 0, x, height, touchPaint);
+					c.drawCircle(x, y, 40 * scale, touchPaint);
+					c.drawText("" +id, x, y, textPaint);
+										
+					/* Check if this touch ID already exists */
 					boolean pointExists = false;
 					for(int j=0; j<tuioPoints.size(); j++){
 						
-						if(tuioPoints.get(j).getId() == id){
+						if(tuioPoints.get(j).getTouchId() == id){
+							 tuioPoints.get(j).update(x/cw,y/ch,timeStamp);
 							 pointExists = true;
-							 j = tuioPoints.size();	
+							 break;	
 						}
 					}
 					
+					// add new Point
 					if(pointExists == false){
-						tuioPoints.add(new TuioPoint(id, x, y, 0, 0, 0));
-					}
+						tuioPoints.add(new TuioPoint(sessionId,id,x/cw,y/ch,timeStamp));
+						sessionId++;
+					} 
 					
+					if(this.drawAdditionalInfo){
+						int textY = (int) ((15 + 20 * i) * scale);
+						c.drawText("x" + i + "=" + x, 10 * scale, textY, textPaint);
+						c.drawText("y" + i + "=" + y, 70 * scale, textY, textPaint);
+					}
+
 				}
-				generateTUIOdata(event);
+				
+				if(this.drawAdditionalInfo) {
+					c.drawText("Sending TUIO data to: ", 0, height-textPaint.getTextSize(),textPaint );
+					c.drawText(this.oscInterface.getInetAdress() + " / " + this.oscInterface.getPort(), 0, height,textPaint );
+				}
 			}
 			getHolder().unlockCanvasAndPost(c);
 
 		}
+		
+		sendTUIOdata();
 		return true;
 	}
 
@@ -175,115 +208,31 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		
 	}
 	
-	
-	
-	/**
-	 * Draws the pointer
-	 * @param x
-	 * @param y
-	 * @param paint
-	 * @param index
-	 * @param id
-	 * @param c
-	 */
-	private void drawPointer(int x, int y, Paint paint, int index, int id, Canvas c, MotionEvent event) {
-		
-		c.drawLine(0, y, width, y, paint);
-		c.drawLine(x, 0, x, height, paint);
-		c.drawCircle(x, y, 40 * scale, paint);
-
-		
-		c.drawText("" +id, x, y, textPaint);
-//		c.drawText("" +id, x-20, y-20, textPaint);
-		
-		for(int i=0; i<tuioPoints.size(); i++){
-			c.drawText( ""+tuioPoints.get(i).getId(), 0, height/2 + (20*i), textPaint); 
-		}
-		
-		c.drawText("Counter " + event.getPointerCount(), 50, (height/2) -20, textPaint);
-		for(int i=0; i<event.getPointerCount(); i++){
-		
-			c.drawText( ""+event.getPointerId(i), 50, height/2 + (20*i), textPaint); 
-		}
-	}
-
-
-	/**
-	 * Draws additional infos
-	 * @param c
-	 */
-	private void drawInformation (int x, int y, int index, Canvas c){
-	
-		c.drawText("Sending TUIO data to: ", 0, height-textPaint.getTextSize(),textPaint );
-		c.drawText(this.oscInterface.getInetAdress() + " / " + this.oscInterface.getPort(), 0, height,textPaint );
-		
-		int textY = (int) ((15 + 20 * index) * scale);
-		c.drawText("x" + index + "=" + x, 10 * scale, textY, textPaint);
-		c.drawText("y" + index + "=" + y, 70 * scale, textY, textPaint);
-	}
-	
-	
-
-	/**
-	 * Generates data for TUIO
-	 * @param event
-	 */
-	private void generateTUIOdata(MotionEvent event){
-		
-		// Generating TUIO data
-		ArrayList<TuioPoint> list = new ArrayList<TuioPoint>();
-		int pointerCount = event.getPointerCount();
-		
-		float xKoord1=0;
-		float yKoord1=0;
-		float x1=0;
-		float y1=0;
-		TuioPoint bufferPoint1=null;
-		
-		for(int i=0; i<pointerCount; i++){
-			
-			x1 = event.getX(i);
-			y1 = event.getY(i);
-			
-			xKoord1 = x1  / cw;
-			yKoord1= y1  / ch;
-			
-			bufferPoint1 = new TuioPoint(i, xKoord1, yKoord1, 0.0f, 0.0f, 0.0f);
-			list.add(bufferPoint1);
-		}
-		
-		sendTUIOdata(list);
-		
-	}
-	
-	
 	/**
 	 * Sends the TUIO Data
 	 * @param blobList
 	 */
-	public void sendTUIOdata (ArrayList<TuioPoint> blobList){
+	public void sendTUIOdata (){
 		
 		OSCBundle oscBundle = new OSCBundle();
-		
-		
-		counter_fseq++;
-		
-		Object outputData[];
+
+		/*
+		 * SOURCE Message
+		 */
+		Object outputData[] = new Object[2];
+		outputData[0] = "source";
+		outputData[1] = sourceName;
+		//oscInterface.printOSCData(new OSCMessage("/tuio/2Dcur", outputData));
+		oscBundle.addPacket(new OSCMessage("/tuio/2Dcur", outputData));
 		
 		/*
-		 * Alive data
+		 * ALIVE Message
 		 */
-		ArrayList<Integer> allIDs = new ArrayList<Integer>();
-
-		for (int i = 0; i < blobList.size(); i++) {
-			allIDs.add(blobList.get(i).getId());
-		}
-
-		outputData = new Object[allIDs.size() + 1];
-		outputData[0] = (String) "alive";
-
-		for (int i = 0; i < allIDs.size(); i++) {
-			outputData[1 + i] = (int) allIDs.get(i); // ID
+		outputData = new Object[tuioPoints.size() + 1];
+		outputData[0] = "alive";
+	
+		for (int i = 0; i < tuioPoints.size(); i++) {
+			outputData[1 + i] = (Integer)tuioPoints.get(i).getSessionId(); // ID
 		}
 
 		//oscInterface.printOSCData(new OSCMessage("/tuio/2Dcur", outputData));
@@ -291,22 +240,22 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 		
 		/*
-		 * Set data
+		 * SET Message
 		 */
-		for (int i = 0; i < blobList.size(); i++) {
+		for (int i = 0; i < tuioPoints.size(); i++) {
 
 			outputData = new Object[7];
 
-			outputData[0] = (String) "set";
-			outputData[1] = (int) blobList.get(i).getId(); // ID
+			outputData[0] = "set";
+			outputData[1] = (Integer) tuioPoints.get(i).getSessionId(); // ID
 
-			outputData[2] = (float) blobList.get(i).getX(); // x KOORD
-			outputData[3] = (float) blobList.get(i).getY(); // y KOORD
+			outputData[2] = (Float) tuioPoints.get(i).getX(); // x KOORD
+			outputData[3] = (Float) tuioPoints.get(i).getY(); // y KOORD
 
-			outputData[4] = (float) blobList.get(i).getxMovVec(); // Movementvector X
-			outputData[5] = (float) blobList.get(i).getyMovVec(); // Movementvector Y
+			outputData[4] = (Float) tuioPoints.get(i).getXVel(); // Movementvector X
+			outputData[5] = (Float) tuioPoints.get(i).getYVel(); // Movementvector Y
 
-			outputData[6] = (float) blobList.get(i).getmAccel(); // Acceleration
+			outputData[6] = (Float) tuioPoints.get(i).getAccel(); // Acceleration
 
 			//oscInterface.printOSCData(new OSCMessage("/tuio/2Dcur", outputData));
 			oscBundle.addPacket(new OSCMessage("/tuio/2Dcur", outputData));
@@ -314,25 +263,21 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 		
 		/*
-		 * fseq
+		 * FSEQ Message
 		 */
 		outputData = new Object[2];
 		outputData[0] = (String) "fseq";
 		outputData[1] = (Integer) counter_fseq;
+		counter_fseq++;
 
 		//oscInterface.printOSCData(new OSCMessage("/tuio/2Dcur", outputData));
-
 		oscBundle.addPacket(new OSCMessage("/tuio/2Dcur", outputData));
 
 		/*
 		 * Sending bundle
 		 */
 		oscInterface.sendOSCBundle(oscBundle);
-		
 	}
-		
-	
-	
 
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		
@@ -360,36 +305,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
 	}
-	
-	
-	/**
-	 * Inits the different Paints
-	 */
-	private void initPaints() {
-		textPaint.setColor(Color.LTGRAY);
-		colors[0] = Color.BLUE;
-		colors[1] = Color.RED;
-		colors[2] = Color.GREEN;
-		colors[3] = Color.YELLOW;
-		colors[4] = Color.CYAN;
-		colors[5] = Color.MAGENTA;
-		colors[6] = Color.DKGRAY;
-		colors[7] = Color.WHITE;
-		colors[8] = Color.LTGRAY;
-		colors[9] = Color.GRAY;
 		
-		for (int i = 0; i < MAX_TOUCHPOINTS; i++) {
-			touchPaints[i] = new Paint();
-			touchPaints[i].setColor(colors[i]);
-			touchPaints[i].setStrokeWidth(2);
-//			touchPaints[i].setStyle(Style.STROKE);
-			touchPaints[i].setStyle(Style.FILL);
-			touchPaints[i].setAntiAlias(true);
-			touchPaints[i].setAlpha(150);
-		}
-	}
-	
-	
 	/**
 	 * Sets up a new OSC connection
 	 * @param ip

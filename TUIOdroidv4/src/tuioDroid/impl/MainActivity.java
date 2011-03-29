@@ -1,3 +1,22 @@
+/*
+ TUIOdroid http://www.tuio.org/
+ An Open Source TUIO Tracker for Android
+ (c) 2011 by Tobias Schwirten and Martin Kaltenbrunner
+ 
+ TUIOdroid is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ TUIOdroid is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with TUIOdroid.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
 package tuioDroid.impl;
 
 import android.app.Activity;
@@ -8,11 +27,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
-
+import java.util.*;
+import java.net.*;
 
 /**
  * Main Activity
- * @author T.Schwirten
+ * @author Tobias Schwirten
+ * @author Martin Kaltenbrunner
  */
 public class MainActivity extends Activity {
   
@@ -27,6 +48,11 @@ public class MainActivity extends Activity {
 	 */
 	private static final int REQUEST_CODE_SETTINGS = 0;
 
+	/**
+	 * Device IP Address
+	 */
+	private String devIP;
+	
 	/**
 	 * IP Address for OSC connection
 	 */
@@ -52,17 +78,31 @@ public class MainActivity extends Activity {
         
         /* load preferences */
         SharedPreferences settings = this.getPreferences(MODE_PRIVATE);
-        
+      
         /* get Strings */
+        devIP = getLocalIpAddress();
         oscIP = settings.getString("myIP", "192.168.1.2");
-        oscPort = settings.getInt("myPort", 3333);
         oscPort = settings.getInt("myPort", 3333);
         drawAdditionalInfo = settings.getBoolean("ExtraInfo", true);
         
-        touchView  = new TouchView(this,oscIP,oscPort,drawAdditionalInfo);
+        touchView  = new TouchView(this,devIP,oscIP,oscPort,drawAdditionalInfo);
         setContentView(touchView);
     }
-    
+   
+    public String getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        return inetAddress.getHostAddress().toString();
+                    }
+                }
+            }
+        } catch (SocketException ex) {}
+        return null;
+    }
     
     /**
      *  Called when the options menu is created
