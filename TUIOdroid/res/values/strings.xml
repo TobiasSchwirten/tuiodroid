@@ -2,4 +2,12 @@
 <resources>
     <string name="hello">Hello World, MainActi!</string>
     <string name="app_name">TUIOdroid</string>
+    <string name="orientation_prompt">Screen Orientation</string>
+    <string-array name="orientation_array">
+        <item>Automatic, let your device decide</item>
+        <item>Fix to Portrait</item>
+        <item>Fix to Landscape</item>
+    </string-array>
+    
+    
 </resources>

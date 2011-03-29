@@ -176,7 +176,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 					if(this.drawAdditionalInfo){
 						int textY = (int) ((15 + 20 * i) * scale);
 						c.drawText("x" + i + "=" + x, 10 * scale, textY, textPaint);
-						c.drawText("y" + i + "=" + y, 70 * scale, textY, textPaint);
+						c.drawText("y" + i + "=" + y, 115 * scale, textY, textPaint);
 					}
 
 				}
@@ -279,6 +279,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		oscInterface.sendOSCBundle(oscBundle);
 	}
 
+	
 	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 		
 		this.width = width;

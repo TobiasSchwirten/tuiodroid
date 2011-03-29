@@ -22,11 +22,15 @@ package tuioDroid.impl;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.Toast;
+import android.widget.AdapterView.AdapterContextMenuInfo;
+
 import java.util.*;
 import java.net.*;
 
@@ -68,6 +72,11 @@ public class MainActivity extends Activity {
 	 */
 	private boolean drawAdditionalInfo;
 	
+	/**
+	 * Adjusts the Touch View
+	 */
+	private int screenOrientation;
+	
 	
 	/**
 	 *  Called when the activity is first created. 
@@ -79,16 +88,19 @@ public class MainActivity extends Activity {
         /* load preferences */
         SharedPreferences settings = this.getPreferences(MODE_PRIVATE);
       
-        /* get Strings */
+        /* get Values */
         devIP = getLocalIpAddress();
         oscIP = settings.getString("myIP", "192.168.1.2");
         oscPort = settings.getInt("myPort", 3333);
         drawAdditionalInfo = settings.getBoolean("ExtraInfo", true);
+        screenOrientation = settings.getInt ("ScreenOrientation", 0);
+        this.adjustScreenOrientation(this.screenOrientation);
         
         touchView  = new TouchView(this,devIP,oscIP,oscPort,drawAdditionalInfo);
         setContentView(touchView);
     }
    
+    
     public String getLocalIpAddress() {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
@@ -148,7 +160,7 @@ public class MainActivity extends Activity {
     	myIntent.putExtra("IP_in", oscIP);
     	myIntent.putExtra("Port_in", oscPort);
     	myIntent.putExtra("ExtraInfo", this.drawAdditionalInfo);
-    	
+    	myIntent.putExtra("ScreenOrientation", this.screenOrientation);
     	startActivityForResult(myIntent, REQUEST_CODE_SETTINGS);
     }
     
@@ -185,12 +197,17 @@ public class MainActivity extends Activity {
         	    		
         	    	if(this.checkNetworkData(ip, port)){
         	    		
-        	    		this.oscIP = ip;
+        	    	 	this.oscIP = ip;
             	    	this.oscPort = port;        	
             	    	this.drawAdditionalInfo = dataBundle.getBoolean("ExtraInfo");
             	    	
             	    	this.touchView.setNewOSCConnection(ip, port);
             	    	this.touchView.setDrawAdditionalInfo(this.drawAdditionalInfo);
+            	    	
+            	    	/* Change behaviour of screen rotation */
+            	    	this.screenOrientation  = dataBundle.getInt("ScreenOrientation");
+            	    	this.adjustScreenOrientation(this.screenOrientation);
+    	
             	    	
         	    		/* Get preferenced, edit and commit */
             	    	SharedPreferences settings = this.getPreferences(MODE_PRIVATE);
@@ -199,6 +216,7 @@ public class MainActivity extends Activity {
             	    	editor.putString("myIP", this.oscIP);
             	    	editor.putInt("myPort", this.oscPort);
             	    	editor.putBoolean("ExtraInfo",this.drawAdditionalInfo);
+            	    	editor.putInt("ScreenOrientation",this.screenOrientation);
             	    	/* speichern */
             	    	editor.commit();            	    	        			
         	    	}
@@ -221,6 +239,30 @@ public class MainActivity extends Activity {
     	}
     }
 
+    
+    /**
+     * Adjusts the screen orientation
+     */
+    private void adjustScreenOrientation (int screenOrientation){
+    	
+    	switch(screenOrientation){
+    	
+    	case 0: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    			break;
+    			
+    	case 1: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+				break;
+				
+    	case 2: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+				break;
+	
+    	default: 	this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+					break;
+	
+	}	
+    	
+    }
+    
     
     /**
      * Checks if the IP and port is valid

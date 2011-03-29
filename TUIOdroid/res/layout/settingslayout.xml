@@ -20,10 +20,23 @@
               	android:layout_width="fill_parent" 
               	android:text="3333"
               	android:layout_height="wrap_content"  	/>
-	<TextView android:id="@+id/tv_Checker" android:text="Draw additional debug info?" android:layout_height="wrap_content" android:layout_width="wrap_content"></TextView>
+	<TextView 	android:id="@+id/tv_Checker" 
+				android:text="Draw additional debug info?" 
+				android:layout_height="wrap_content" 
+				android:layout_width="wrap_content"></TextView>
 	<CheckBox	android:id="@+id/checkB_ExtraInfo" 
               	android:layout_width="wrap_content" 
               	android:layout_height="wrap_content"  	/>
+   
+    <TextView 	android:id="@+id/tv_spinner"
+              	android:layout_width="fill_parent"
+              	android:layout_height="wrap_content"
+              	android:text="@string/orientation_prompt"/>
+    <Spinner	android:id="@+id/spinner"
+            	android:layout_width="fill_parent"
+            	android:layout_height="wrap_content"
+            	android:prompt="@string/orientation_prompt"/>
+            	
     <Button 	android:id="@+id/button"
             	android:layout_width="wrap_content"
             	android:layout_height="wrap_content"
