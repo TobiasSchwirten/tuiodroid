@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, MainActi!</string>
     <string name="app_name">TUIOdroid</string>
     <string name="orientation_prompt">Screen Orientation</string>
     <string-array name="orientation_array">
-        <item>Automatic, let your device decide</item>
-        <item>Fix to Portrait</item>
-        <item>Fix to Landscape</item>
+        <item>Automatic</item>
+        <item>Portrait</item>
+        <item>Landscape</item>
     </string-array>
+        <string name="udp_string">Target UDP Port</string>
     
     
 </resources>
