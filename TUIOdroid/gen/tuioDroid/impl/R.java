@@ -17,18 +17,24 @@ public final class R {
         public static final int icon=0x7f020000;
     }
     public static final class id {
-        public static final int button=0x7f070009;
-        public static final int checkB_ExtraInfo=0x7f070006;
-        public static final int et_IP=0x7f070002;
-        public static final int et_Port=0x7f070004;
-        public static final int help=0x7f07000b;
-        public static final int settings=0x7f07000a;
-        public static final int spinner=0x7f070008;
+        public static final int button_Layout=0x7f07000d;
+        public static final int cancelButton=0x7f07000f;
+        public static final int checkB_ExtraInfo=0x7f07000b;
+        public static final int debug_Layout=0x7f07000a;
+        public static final int et_IP=0x7f070003;
+        public static final int et_Port=0x7f070006;
+        public static final int help=0x7f070011;
+        public static final int ip_Layout=0x7f070001;
+        public static final int localIP=0x7f07000c;
+        public static final int orientation_Layout=0x7f070007;
+        public static final int port_Layout=0x7f070004;
+        public static final int saveButton=0x7f07000e;
+        public static final int settings=0x7f070010;
+        public static final int spinner=0x7f070009;
         public static final int textHelp=0x7f070000;
-        public static final int tv_Checker=0x7f070005;
-        public static final int tv_IP=0x7f070001;
-        public static final int tv_Port=0x7f070003;
-        public static final int tv_spinner=0x7f070007;
+        public static final int tv_IP=0x7f070002;
+        public static final int tv_Port=0x7f070005;
+        public static final int tv_spinner=0x7f070008;
     }
     public static final class layout {
         public static final int helplayout=0x7f030000;
@@ -38,8 +44,8 @@ public final class R {
         public static final int m=0x7f060000;
     }
     public static final class string {
-        public static final int app_name=0x7f040001;
-        public static final int hello=0x7f040000;
-        public static final int orientation_prompt=0x7f040002;
+        public static final int app_name=0x7f040000;
+        public static final int orientation_prompt=0x7f040001;
+        public static final int udp_string=0x7f040002;
     }
 }

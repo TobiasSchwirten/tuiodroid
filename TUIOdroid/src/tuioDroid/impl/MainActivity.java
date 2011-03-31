@@ -27,9 +27,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.AdapterView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 import java.util.*;
 import java.net.*;
@@ -178,7 +176,7 @@ public class MainActivity extends Activity {
 
     /**
      * Listens for results of new child activities. 
-     * Different child activities are indentified by their requestCode
+     * Different child activities are identified by their requestCode
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
        
@@ -207,7 +205,6 @@ public class MainActivity extends Activity {
             	    	/* Change behaviour of screen rotation */
             	    	this.screenOrientation  = dataBundle.getInt("ScreenOrientation");
             	    	this.adjustScreenOrientation(this.screenOrientation);
-    	
             	    	
         	    		/* Get preferenced, edit and commit */
             	    	SharedPreferences settings = this.getPreferences(MODE_PRIVATE);

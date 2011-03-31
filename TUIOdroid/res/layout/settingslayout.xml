@@ -3,43 +3,25 @@
               	android:layout_width="fill_parent" 
               	android:layout_height="fill_parent" 
               	android:orientation="vertical" >
-              
- 	<TextView 	android:id="@+id/tv_IP"
-              	android:layout_width="wrap_content"
-              	android:layout_height="wrap_content"
-              	android:text="Target IP Address" 			/>
-   	<EditText  	android:id="@+id/et_IP" 
-              	android:layout_width="fill_parent" 
-              	android:text="192.168.1.2"
-              	android:layout_height="wrap_content" 	/>
-   	<TextView 	android:id="@+id/tv_Port"
-              	android:layout_width="wrap_content"
-              	android:layout_height="wrap_content"
-              	android:text="Target UDP Port" 				/>
-	<EditText 	android:id="@+id/et_Port" 
-              	android:layout_width="fill_parent" 
-              	android:text="3333"
-              	android:layout_height="wrap_content"  	/>
-	<TextView 	android:id="@+id/tv_Checker" 
-				android:text="Draw additional debug info?" 
-				android:layout_height="wrap_content" 
-				android:layout_width="wrap_content"></TextView>
-	<CheckBox	android:id="@+id/checkB_ExtraInfo" 
-              	android:layout_width="wrap_content" 
-              	android:layout_height="wrap_content"  	/>
-   
-    <TextView 	android:id="@+id/tv_spinner"
-              	android:layout_width="fill_parent"
-              	android:layout_height="wrap_content"
-              	android:text="@string/orientation_prompt"/>
-    <Spinner	android:id="@+id/spinner"
-            	android:layout_width="fill_parent"
-            	android:layout_height="wrap_content"
-            	android:prompt="@string/orientation_prompt"/>
-            	
-    <Button 	android:id="@+id/button"
-            	android:layout_width="wrap_content"
-            	android:layout_height="wrap_content"
-            	android:text="   OK   " 					/>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/ip_Layout">
+        <TextView android:id="@+id/tv_IP" android:layout_height="wrap_content" android:text="Target IP Address" android:layout_width="140dip"></TextView>
+        <EditText android:text="192.168.1.2" android:id="@+id/et_IP" android:layout_height="wrap_content" android:layout_width="fill_parent"></EditText>
+    </LinearLayout>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/port_Layout">
+        <TextView android:id="@+id/tv_Port" android:layout_height="wrap_content" android:text="Target UDP Port" android:layout_width="140dip"></TextView>
+        <EditText android:text="3333" android:id="@+id/et_Port" android:layout_height="wrap_content" android:layout_width="fill_parent"></EditText>
+    </LinearLayout>
+    <LinearLayout android:id="@+id/orientation_Layout" android:layout_height="wrap_content" android:layout_width="fill_parent" android:orientation="horizontal">
+        <TextView android:id="@+id/tv_spinner" android:layout_height="wrap_content" android:text="@string/orientation_prompt" android:layout_width="140dip"></TextView>
+        <Spinner android:prompt="@string/orientation_prompt" android:id="@+id/spinner" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/debug_Layout" android:orientation="horizontal" android:layout_width="fill_parent">
+        <CheckBox android:id="@+id/checkB_ExtraInfo" android:layout_height="wrap_content" android:layout_width="140dip" android:text="Debug Info"></CheckBox>
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="local IP: 127.0.0.1" android:id="@+id/localIP"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/button_Layout">
+        <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/saveButton" android:text="   Save Settings   "></Button>
+        <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/cancelButton" android:text="   Cancel   "></Button>
+    </LinearLayout>
   
 </LinearLayout>
