@@ -84,7 +84,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		setFocusableInTouchMode(true); // make sure we get touch events
 		
 		textPaint.setColor(Color.LTGRAY);
-		touchPaint.setColor(Color.BLUE);
+		touchPaint.setColor(Color.rgb(34,68,136));
 		touchPaint.setStrokeWidth(2);
 		touchPaint.setStyle(Style.FILL);
 		touchPaint.setAntiAlias(true);
@@ -105,6 +105,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		Canvas c = getHolder().lockCanvas();
 		
 		int pointerCount = event.getPointerCount();
+		android.util.Log.v("PointerCount",""+pointerCount);
 		
 		if (pointerCount > MAX_TOUCHPOINTS) {
 			pointerCount = MAX_TOUCHPOINTS;

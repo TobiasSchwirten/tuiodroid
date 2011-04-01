@@ -7,7 +7,10 @@
         <item>Portrait</item>
         <item>Landscape</item>
     </string-array>
+        <string name="host_string">Target IP Address</string>
         <string name="udp_string">Target UDP Port</string>
-    
-    
+        <string name="author_string">(c) 2011 by Tobias Schwirten &amp; Martin Kaltenbrunner</string>
+        <string name="help_string">This application sends multitouch events via TUIO/UDP. You can change the target IP address and port number as well as the default screen orientation in the settings dialog\n\nYou will find further information about the TUIO protocol and framework at TUIO.org</string>
+		<string name="url_string">http://www.tuio.org/</string>
+
 </resources>
