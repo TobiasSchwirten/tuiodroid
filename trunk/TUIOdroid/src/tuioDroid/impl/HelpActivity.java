@@ -41,7 +41,7 @@ public class HelpActivity extends Activity{
 	        setContentView(R.layout.helplayout);
 	        
 	        TextView textView_Help = (TextView)findViewById(R.id.textHelp);
-	        String helperText = "TUIOdroid Version 0.7 " +
+	        String helperText = "TUIOdroid Version 0.9 " +
 			"\n(c) by Tobias Schwirten & Martin Kaltenbrunner" +
 			"\n" +
 			"\nThis Application sends multitouch events via TUIO/UDP, " +
