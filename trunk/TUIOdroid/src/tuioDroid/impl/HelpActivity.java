@@ -22,8 +22,12 @@ package tuioDroid.impl;
 import tuioDroid.impl.R;
 import android.app.Activity;
 import android.os.Bundle;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
-
+import android.text.util.Linkify;
+import java.util.regex.Pattern;
 
 /**
  * Activity that provides a help screen for the user
@@ -40,15 +44,27 @@ public class HelpActivity extends Activity{
 	        super.onCreate(savedInstanceState);
 	        setContentView(R.layout.helplayout);
 	        
-	        TextView textView_Help = (TextView)findViewById(R.id.textHelp);
-	        String helperText = "TUIOdroid Version 0.9 " +
-			"\n(c) by Tobias Schwirten & Martin Kaltenbrunner" +
-			"\n" +
-			"\nThis Application sends multitouch events via TUIO/UDP, " +
-	        "you can change the target IP address and port number in the settings dialog" +
-	        "\n" +
-	        "\nYou can find further information about the TUIO protocol and framework at TUIO.org";
-	        					
-	        textView_Help.setText(helperText);
+	        try {
+	        	String appVersion = getPackageManager().getPackageInfo(getPackageName(), 0).versionName; 
+	        	TextView textView_Version = (TextView)findViewById(R.id.textVersion);
+	        	textView_Version.setText("v"+appVersion);
+	        } catch (Exception e) {}
+	        
+	        TextView textView_Link = (TextView)findViewById(R.id.textHelp);
+	        Pattern pattern = Pattern.compile("TUIO.org");
+	        Linkify.addLinks(textView_Link, pattern, "http://");
+	        
+	        Button btn_OK = (Button)findViewById(R.id.okButton);
+	        btn_OK.setOnClickListener(listener_OkBtn);
 	    }
+	 
+	 /**
+	  * Listener for the OK button
+	  */
+	 private OnClickListener listener_OkBtn = new OnClickListener(){
+	        
+		  public void onClick(View v){                        	           
+	           finish();
+	        }
+	    };
 }
