@@ -38,7 +38,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-
 /**
  * Activity that provides Settings for the user
  * @author Tobias Schwirten
@@ -115,7 +114,25 @@ public class SettingsActivity extends Activity{
 	  */
 	 private OnClickListener listener_OkBtn = new OnClickListener(){
 	        
-		  public void onClick(View v){                        
+		  public void onClick(View v){      
+			  
+     	    	String ip = ((TextView) findViewById(R.id.et_IP)).getText().toString();
+    	    	
+    	    	try { InetAddress.getByName(ip); } 
+    	    	catch (Exception e) { 
+    	    		((TextView) findViewById(R.id.et_IP)).setText("invalid address");
+    	    		return;
+    	    	}
+    	    	
+    	    	int port = 3333;
+    	    	try { port = Integer.parseInt(((TextView) findViewById(R.id.et_Port)).getText().toString()); }
+    	    	catch (Exception e) { port = 0; }
+    	    	if (port<1024) {
+    	    		((TextView) findViewById(R.id.et_Port)).setText("invalid port");
+    	    		return;
+    	    	}
+
+			  
 	           Intent responseIntent = new Intent();
 	           
 	           responseIntent.putExtra("IP",((TextView) findViewById(R.id.et_IP)).getText().toString());
