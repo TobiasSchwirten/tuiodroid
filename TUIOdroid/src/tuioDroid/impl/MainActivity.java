@@ -195,47 +195,47 @@ public class MainActivity extends Activity {
         		case RESULT_OK:
         			Bundle dataBundle = data.getExtras(); 
         		    
+        			if (devIP==null) Toast.makeText(this, "No active network connection found!", Toast.LENGTH_LONG).show();
+        			
         	    	String ip = dataBundle.getString("IP");
-        	    	String port_String = dataBundle.getString("Port");
-        	    	int port = Integer.parseInt(port_String);
         	    	
+        	    	try { InetAddress.getByName(ip); } 
+        	    	catch (Exception e) {
+        	    		Toast.makeText(this, "Invalid host name or IP address!", Toast.LENGTH_LONG).show();
+        			}
+        	    	
+        	    	int port = 3333;
+        	    	try { port = Integer.parseInt(dataBundle.getString("Port")); }
+        	    	catch (Exception e) { port = 0; }
+        	    	if (port<1024) Toast.makeText(this, "Invalid UDP port number!", Toast.LENGTH_LONG).show();
         	    		
-        	    	if(this.checkNetworkData(ip, port)){
-        	    		
-        	    	 	this.oscIP = ip;
-            	    	this.oscPort = port;        	
-            	    	this.drawAdditionalInfo = dataBundle.getBoolean("ExtraInfo");
-            	    	this.sendPeriodicUpdates = dataBundle.getBoolean("VerboseTUIO");
+        	    	this.oscIP = ip;
+            	    this.oscPort = port;        	
+            	    this.drawAdditionalInfo = dataBundle.getBoolean("ExtraInfo");
+            	    this.sendPeriodicUpdates = dataBundle.getBoolean("VerboseTUIO");
             	    	
-            	    	this.touchView.setNewOSCConnection(ip, port);
-            	    	this.touchView.drawAdditionalInfo = this.drawAdditionalInfo;
-            	    	this.touchView.sendPeriodicUpdates = this.sendPeriodicUpdates;
+            	    this.touchView.setNewOSCConnection(ip, port);
+            	    this.touchView.drawAdditionalInfo = this.drawAdditionalInfo;
+            	    this.touchView.sendPeriodicUpdates = this.sendPeriodicUpdates;
             	    	
-            	    	/* Change behavior of screen rotation */
-            	    	this.screenOrientation  = dataBundle.getInt("ScreenOrientation");
-            	    	this.adjustScreenOrientation(this.screenOrientation);
+            	    /* Change behavior of screen rotation */
+            	    this.screenOrientation  = dataBundle.getInt("ScreenOrientation");
+            	    this.adjustScreenOrientation(this.screenOrientation);
             	    	
-        	    		/* Get preferences, edit and commit */
-            	    	SharedPreferences settings = this.getPreferences(MODE_PRIVATE);
-            	    	SharedPreferences.Editor editor = settings.edit();
-            	    	/* define Key/Value */
-            	    	editor.putString("myIP", this.oscIP);
-            	    	editor.putInt("myPort", this.oscPort);
-            	    	editor.putBoolean("ExtraInfo",this.drawAdditionalInfo);
-            	    	editor.putBoolean("VerboseTUIO",this.sendPeriodicUpdates);
-            	    	editor.putInt("ScreenOrientation",this.screenOrientation);
-            	    	/* save */
-            	    	editor.commit();            	    	        			
-        	    	}
-        	    	
-        	    	else{
-        	    		CharSequence text ="Invalid IP or Port! \nPort number only between 3330 and 3340 \nIP must be like this n.n.n.n \nwhere n is number between 0 and 255!";
-        	    		int duration = Toast.LENGTH_LONG;
-        	    
-        	    		Toast toast = Toast.makeText(this, text, duration);
-        	    		toast.show();
-        	    	}
-        	    	
+        	    	/* Get preferences, edit and commit */
+            	    SharedPreferences settings = this.getPreferences(MODE_PRIVATE);
+            	    SharedPreferences.Editor editor = settings.edit();
+            	    
+            	    /* define Key/Value */
+            	    editor.putString("myIP", this.oscIP);
+            	    editor.putInt("myPort", this.oscPort);
+            	    editor.putBoolean("ExtraInfo",this.drawAdditionalInfo);
+            	    editor.putBoolean("VerboseTUIO",this.sendPeriodicUpdates);
+            	    editor.putInt("ScreenOrientation",this.screenOrientation);
+            	    
+            	    /* save Settings*/
+            	    editor.commit();            	    	        			
+         	    	
         	    	break;
         	    
         	    
@@ -246,7 +246,6 @@ public class MainActivity extends Activity {
     	}
     }
 
-    
     /**
      * Adjusts the screen orientation
      */
@@ -254,55 +253,18 @@ public class MainActivity extends Activity {
     	
     	switch(screenOrientation){
     	
-    	case 0: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-    			break;
+    		case 0: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    		break;
     			
-    	case 1: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-				break;
+    		case 1: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    		break;
 				
-    	case 2: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-				break;
+    		case 2: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    		break;
 	
-    	default: 	this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-					break;
-	
-	}	
-    	
-    }
-    
-    
-    /**
-     * Checks if the IP and port is valid
-     */
-    private boolean checkNetworkData (String ip, int port){
-    	
-    	boolean valid = false;
-    	
-    	if (port >=3330 && port <=3340){
-    		valid = true;
-    		System.out.println("Port number valid!");
-    	}
-    	else{
-    		valid = false;
-    	}
-    	
-    	
-		if (valid) {
-			
-			String[] parts = ip.split("\\.");
-
-			for (String s : parts) {
-
-				int i = Integer.parseInt(s);
-				if (i < 0 || i > 255) {
-					valid = false;
-				}
-			}
-    		
-    	}
-    	
-    	return valid;
-    	
+    		default: 	this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    		break;
+    	}	
     }
     
 }

@@ -105,13 +105,14 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		//always send on ACTION_DOWN & ACTION_UP
 		if ((event.getAction() == MotionEvent.ACTION_DOWN) ||  (event.getAction() == MotionEvent.ACTION_UP)) dt = 1000;
 
-		//printPointerInfo(event);
 		cw = getWidth();
 		ch = getHeight();
 		Canvas c = getHolder().lockCanvas();
 		
 		int pointerCount = event.getPointerCount();
-		android.util.Log.v("PointerCount",""+pointerCount);
+
+		//android.util.Log.v("PointerCount",""+pointerCount);
+		//printPointerInfo(event);
 		
 		if (pointerCount > MAX_TOUCHPOINTS) {
 			pointerCount = MAX_TOUCHPOINTS;
