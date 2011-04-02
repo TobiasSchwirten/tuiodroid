@@ -44,6 +44,7 @@ import android.view.SurfaceView;
 public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private static final int MAX_TOUCHPOINTS = 10;
+	private static final int FRAME_RATE = 40;
 	private Paint textPaint = new Paint();
 	private Paint touchPaint = new Paint();
 
@@ -63,6 +64,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	private int sessionId = 0;
 	
 	private long startTime;
+	private long lastTime = 0;
+	
 	private boolean running = false;
 	/**
 	 * Constructor
@@ -100,7 +103,12 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	public boolean onTouchEvent(MotionEvent event) {
 
 		long timeStamp = System.currentTimeMillis() - startTime;
+		long dt = timeStamp - lastTime;
+		lastTime = timeStamp;
 		
+		//always send on ACTION_DOWN & ACTION_UP
+		if ((event.getAction() == MotionEvent.ACTION_DOWN) ||  (event.getAction() == MotionEvent.ACTION_UP)) dt = 1000;
+
 		//printPointerInfo(event);
 		cw = getWidth();
 		ch = getHeight();
@@ -122,11 +130,10 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 					// PointerCount is always >= 1, 
 					// so if ACTION_UP and PointerCount==1, 
 					// all Pointers are gone
-					tuioPoints.clear(); 
+					tuioPoints.clear();
 				} 
 				
-			} else {
-			
+			} else {				
 				// clear removed Points				
 				for (int i = 0; i < tuioPoints.size(); i++) {
 					
@@ -193,7 +200,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 		}
 		
-		if (!sendPeriodicUpdates) sendTUIOdata();
+		if ((!sendPeriodicUpdates) && (dt<1000/FRAME_RATE)) sendTUIOdata();
 		return true;
 	}
 
@@ -310,7 +317,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		    public void run() {
 		      while (running) {
 		    	  sendTUIOdata();
-		    	  try { Thread.sleep(25); }
+		    	  try { Thread.sleep(1000/FRAME_RATE); }
 		    	  catch (Exception e) {}
 		      }
 		    }
@@ -324,6 +331,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		tuioPoints.clear();
 		counter_fseq = 0;
 		sessionId = 0;
+		startTime = System.currentTimeMillis();
+		lastTime = 0;
 	}
 		
 	/**
