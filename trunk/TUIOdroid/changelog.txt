@@ -1,5 +1,11 @@
 TUIOdroid for Android Changelog
 
+v0.9 02.04.2011
+---------------
+* Add TUIO verbosity option 
+* Improved help dialog
+* updated JavaOSC Library
+
 v0.8 31.03.2011
 ---------------
 * Option for screen orientation 
