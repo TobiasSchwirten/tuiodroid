@@ -58,8 +58,8 @@ public class SettingsActivity extends Activity{
 	        Button btn_OK = (Button)findViewById(R.id.saveButton);
 	        btn_OK.setOnClickListener(listener_OkBtn);
 	        
-	        Button btn_KO = (Button)findViewById(R.id.cancelButton);
-	        btn_KO.setOnClickListener(listener_KoBtn);
+	        //Button btn_KO = (Button)findViewById(R.id.cancelButton);
+	        //btn_KO.setOnClickListener(listener_KoBtn);
 
 	        EditText editText_IP = (EditText)findViewById(R.id.et_IP);
 	        String ip = (getIntent().getExtras().getString("IP_in"));
@@ -68,6 +68,10 @@ public class SettingsActivity extends Activity{
 	        EditText editText_port = (EditText)findViewById(R.id.et_Port);
 	        int port = getIntent().getExtras().getInt("Port_in");
 	        editText_port.setText(Integer.toString(port));
+	        
+	        CheckBox checker_Verbose = (CheckBox)findViewById(R.id.checkB_Verbosity);
+	        boolean sendPeriodicUpdates = getIntent().getExtras().getBoolean("VerboseTUIO");
+	        checker_Verbose.setChecked(sendPeriodicUpdates);
 	        
 	        CheckBox checker_Info = (CheckBox)findViewById(R.id.checkB_ExtraInfo);
 	        boolean drawAdditionalInfo = getIntent().getExtras().getBoolean("ExtraInfo");
@@ -117,9 +121,9 @@ public class SettingsActivity extends Activity{
 	           responseIntent.putExtra("IP",((TextView) findViewById(R.id.et_IP)).getText().toString());
 	           responseIntent.putExtra("Port", ((TextView) findViewById(R.id.et_Port)).getText().toString());
 	           responseIntent.putExtra("ExtraInfo", ((CheckBox)findViewById(R.id.checkB_ExtraInfo)).isChecked());
+	           responseIntent.putExtra("VerboseTUIO", ((CheckBox)findViewById(R.id.checkB_Verbosity)).isChecked());
 	           responseIntent.putExtra("ScreenOrientation",  ((Spinner) (findViewById(R.id.spinner))).getSelectedItemPosition());
 
-	          
 	           /*Setting result for this activity */
 	           setResult(RESULT_OK, responseIntent);
 	           
@@ -130,12 +134,12 @@ public class SettingsActivity extends Activity{
 /**
  * Listener for the Cancel button
  */
-private OnClickListener listener_KoBtn = new OnClickListener(){
+/*private OnClickListener listener_KoBtn = new OnClickListener(){
        
 	  public void onClick(View v){                          
           finish();
        }
-   };    
+   };*/ 
 
 
 
