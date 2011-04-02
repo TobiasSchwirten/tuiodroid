@@ -3,6 +3,6 @@ TUIOdroid is an open source TUIO tracker for Android devices, which allows multi
 Source Code: https://code.google.com/p/tuiodroid/
 Online Installer: https://market.android.com/details?id=tuioDroid.impl
 
-This application has been created by Tobias Schwirten and Martin Kaltenbrunner. The included Java TUIO implementation is using the JavaOSC library by Chandrasekhar Ramakrishnan. Please note that the GPL demands the publication of the full source code of any derived work. If you are planning to develop a proprietary application based on this code, we may be able to provide an alternative commercial license option.
+This application has been created by Tobias Schwirten and Martin Kaltenbrunner. The included Java TUIO implementation is based on the JavaOSC library by Chandrasekhar Ramakrishnan. Please note that the GPL demands the publication of the full source code of any derived work. If you are planning to develop a proprietary application based on this code, we may be able to provide an alternative commercial license option.
 
 
