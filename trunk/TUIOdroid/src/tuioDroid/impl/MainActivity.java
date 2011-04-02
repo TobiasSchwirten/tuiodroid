@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
         devIP = getLocalIpAddress();
         oscIP = settings.getString("myIP", "192.168.1.2");
         oscPort = settings.getInt("myPort", 3333);
-        drawAdditionalInfo = settings.getBoolean("ExtraInfo", true);
+        drawAdditionalInfo = settings.getBoolean("ExtraInfo", false);
         sendPeriodicUpdates = settings.getBoolean("VerboseTUIO", true);
         screenOrientation = settings.getInt ("ScreenOrientation", 0);
         this.adjustScreenOrientation(this.screenOrientation);
