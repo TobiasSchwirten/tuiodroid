@@ -1,17 +1,22 @@
 TUIOdroid for Android Changelog
 
+v1.0 0x.04.2011
+---------------
+* fix network setup 
+* remove debug messages
+
 v0.9 02.04.2011
 ---------------
-* Add TUIO verbosity option 
-* Improved help dialog
+* add TUIO verbosity option 
+* improved help dialog
 * updated JavaOSC library
 * limit to 40 FPS
 
 v0.8 31.03.2011
 ---------------
-* Option for screen orientation 
-* Improved settings dialog
-* New application icon
+* option for screen orientation 
+* improved settings dialog
+* new application icon
 
 v0.7 29.03.2011
 ---------------

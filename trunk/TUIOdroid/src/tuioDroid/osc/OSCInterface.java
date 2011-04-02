@@ -20,14 +20,9 @@
 package tuioDroid.osc;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.List;
-import com.illposed.osc.OSCBundle;
-import com.illposed.osc.OSCMessage;
-import com.illposed.osc.OSCPortOut;
-
+import com.illposed.osc.*;
 
 /**
  * Represents OSC connection
@@ -44,42 +39,35 @@ public class OSCInterface {
 	/**
 	 * Port on which the OSC receiver listens to 
 	 */
-	private int port;
+	private int port = 3333;
 	
 	/**
 	 * The OSC out port for this OSC Interface
 	 */
 	private OSCPortOut sender;
-
-	
-	
-	/**
-	 * Default
-	 */
-	public OSCInterface(){
-		
-	}
 	
 	/**
 	 * Constructor
 	 */
-	public OSCInterface(String inetAddress, int port){
+	public OSCInterface(String host, int port){
 		
 		try {
-			this.inetAdress = InetAddress.getByName(inetAddress);
-			this.port = port;
-			sender = new OSCPortOut(inetAdress, port);
-			
-			System.out.println("*********OSC Interface connected to: " + this.port + "  " + this.inetAdress);
-			
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (SocketException e) {
+			this.inetAdress = InetAddress.getByName(host);
+			if (port>1023) this.port = port;			
+			//System.out.println("*********OSC Interface connected to: " + this.port + "  " + this.inetAdress);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		if (this.inetAdress==null) {
+			try { this.inetAdress = InetAddress.getLocalHost(); }
+			catch (Exception e) {}			
+		}
+		
+		try {
+			sender = new OSCPortOut(inetAdress, port);
+		} catch (Exception e) {}
 	}
-	
-	
 	
 	/**
 	 * Sends list of OSC messages as OSC bundles
@@ -94,10 +82,7 @@ public class OSCInterface {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
-	
-	
 	
 	/**
 	 * Sends a single OSC message 
@@ -107,13 +92,12 @@ public class OSCInterface {
 
 		try {
 			sender.send(oscMessage); 
-			printOSCData(oscMessage);
+			//printOSCData(oscMessage);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
   
 	}
-	
 	
 	/**
 	 * Sends OSC bundle
@@ -128,10 +112,7 @@ public class OSCInterface {
 		}
 		
 	}
-	
-	
-	
-	
+
 	/**
 	 * Prints out OSC data 
 	 * @param oscMessage
