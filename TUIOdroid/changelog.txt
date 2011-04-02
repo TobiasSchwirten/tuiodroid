@@ -4,7 +4,8 @@ v0.9 02.04.2011
 ---------------
 * Add TUIO verbosity option 
 * Improved help dialog
-* updated JavaOSC Library
+* updated JavaOSC library
+* limit to 40 FPS
 
 v0.8 31.03.2011
 ---------------
