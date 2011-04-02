@@ -71,6 +71,11 @@ public class MainActivity extends Activity {
 	private boolean drawAdditionalInfo;
 	
 	/**
+	 * Adjusts the TUIO verbosity
+	 */
+	private boolean sendPeriodicUpdates;
+	
+	/**
 	 * Adjusts the Touch View
 	 */
 	private int screenOrientation;
@@ -91,10 +96,11 @@ public class MainActivity extends Activity {
         oscIP = settings.getString("myIP", "192.168.1.2");
         oscPort = settings.getInt("myPort", 3333);
         drawAdditionalInfo = settings.getBoolean("ExtraInfo", true);
+        sendPeriodicUpdates = settings.getBoolean("VerboseTUIO", true);
         screenOrientation = settings.getInt ("ScreenOrientation", 0);
         this.adjustScreenOrientation(this.screenOrientation);
         
-        touchView  = new TouchView(this,devIP,oscIP,oscPort,drawAdditionalInfo);
+        touchView  = new TouchView(this,devIP,oscIP,oscPort,drawAdditionalInfo,sendPeriodicUpdates);
         setContentView(touchView);
     }
    
@@ -158,7 +164,8 @@ public class MainActivity extends Activity {
     	myIntent.putExtra("IP_in", oscIP);
     	myIntent.putExtra("Port_in", oscPort);
     	myIntent.putExtra("ExtraInfo", this.drawAdditionalInfo);
-    	myIntent.putExtra("ScreenOrientation", this.screenOrientation);
+       	myIntent.putExtra("VerboseTUIO", this.sendPeriodicUpdates);
+      	myIntent.putExtra("ScreenOrientation", this.screenOrientation);
     	startActivityForResult(myIntent, REQUEST_CODE_SETTINGS);
     }
     
@@ -198,23 +205,26 @@ public class MainActivity extends Activity {
         	    	 	this.oscIP = ip;
             	    	this.oscPort = port;        	
             	    	this.drawAdditionalInfo = dataBundle.getBoolean("ExtraInfo");
+            	    	this.sendPeriodicUpdates = dataBundle.getBoolean("VerboseTUIO");
             	    	
             	    	this.touchView.setNewOSCConnection(ip, port);
-            	    	this.touchView.setDrawAdditionalInfo(this.drawAdditionalInfo);
+            	    	this.touchView.drawAdditionalInfo = this.drawAdditionalInfo;
+            	    	this.touchView.sendPeriodicUpdates = this.sendPeriodicUpdates;
             	    	
-            	    	/* Change behaviour of screen rotation */
+            	    	/* Change behavior of screen rotation */
             	    	this.screenOrientation  = dataBundle.getInt("ScreenOrientation");
             	    	this.adjustScreenOrientation(this.screenOrientation);
             	    	
-        	    		/* Get preferenced, edit and commit */
+        	    		/* Get preferences, edit and commit */
             	    	SharedPreferences settings = this.getPreferences(MODE_PRIVATE);
             	    	SharedPreferences.Editor editor = settings.edit();
             	    	/* define Key/Value */
             	    	editor.putString("myIP", this.oscIP);
             	    	editor.putInt("myPort", this.oscPort);
             	    	editor.putBoolean("ExtraInfo",this.drawAdditionalInfo);
+            	    	editor.putBoolean("VerboseTUIO",this.sendPeriodicUpdates);
             	    	editor.putInt("ScreenOrientation",this.screenOrientation);
-            	    	/* speichern */
+            	    	/* save */
             	    	editor.commit();            	    	        			
         	    	}
         	    	

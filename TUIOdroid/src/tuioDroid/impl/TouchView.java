@@ -56,13 +56,14 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	private int counter_fseq = 0;
 	private float cw, ch = 0;
 	
-	private boolean drawAdditionalInfo;
+	public boolean drawAdditionalInfo;
+	public boolean sendPeriodicUpdates;
 	
 	private String sourceName;
 	private int sessionId = 0;
 	
 	private long startTime;
-
+	private boolean running = false;
 	/**
 	 * Constructor
 	 * @param context
@@ -70,10 +71,11 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @param oscIP
 	 * @param oscPort
 	 */
-	public TouchView(Context context, String devIP, String oscIP, int oscPort, boolean drawAdditionalInfo) {
+	public TouchView(Context context, String devIP, String oscIP, int oscPort, boolean drawAdditionalInfo, boolean sendPeriodicUpdates) {
 		super(context, null);
 		oscInterface  = new OSCInterface(oscIP , oscPort);
 		this.drawAdditionalInfo = drawAdditionalInfo;
+		this.sendPeriodicUpdates = sendPeriodicUpdates;
 		startTime = System.currentTimeMillis();
 		
 		tuioPoints = new ArrayList<TuioPoint>();
@@ -191,7 +193,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 		}
 		
-		sendTUIOdata();
+		if (!sendPeriodicUpdates) sendTUIOdata();
 		return true;
 	}
 
@@ -302,10 +304,26 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 	
 	public void surfaceCreated(SurfaceHolder holder) {
+		running = true;
+		if (sendPeriodicUpdates) {
+		new Thread(new Runnable() {
+		    public void run() {
+		      while (running) {
+		    	  sendTUIOdata();
+		    	  try { Thread.sleep(25); }
+		    	  catch (Exception e) {}
+		      }
+		    }
+		  }).start();
+		}
 	}
 	
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
+		running = false;
+		tuioPoints.clear();
+		counter_fseq = 0;
+		sessionId = 0;
 	}
 		
 	/**
@@ -316,11 +334,6 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	public void setNewOSCConnection (String ip, int port){	
 		this.oscInterface.closeInteface();
 		this.oscInterface = new OSCInterface(ip,port);
-	}
-
-
-	public void setDrawAdditionalInfo(boolean drawAdditionalInfo) {
-		this.drawAdditionalInfo = drawAdditionalInfo;
 	}
 
 

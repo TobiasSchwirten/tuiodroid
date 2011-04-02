@@ -16,12 +16,12 @@
         <Spinner android:prompt="@string/orientation_prompt" android:id="@+id/spinner" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
     </LinearLayout>
     <LinearLayout android:layout_height="wrap_content" android:id="@+id/debug_Layout" android:orientation="horizontal" android:layout_width="fill_parent">
-        <CheckBox android:id="@+id/checkB_ExtraInfo" android:layout_height="wrap_content" android:layout_width="140dip" android:text="Debug Info"></CheckBox>
-        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="local IP: 127.0.0.1" android:id="@+id/localIP"></TextView>
+        <CheckBox android:layout_height="wrap_content" android:layout_width="140dip" android:id="@+id/checkB_Verbosity" android:text="Verbose TUIO"></CheckBox>
+        <CheckBox android:id="@+id/checkB_ExtraInfo" android:layout_height="wrap_content" android:text="Draw Debug Info" android:layout_width="wrap_content"></CheckBox>
     </LinearLayout>
     <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/button_Layout">
-        <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/saveButton" android:text="   Save Settings   "></Button>
-        <Button android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/cancelButton" android:text="   Cancel   "></Button>
+        <Button android:layout_height="wrap_content" android:id="@+id/saveButton" android:text="   Save Settings   " android:layout_width="140dip" android:padding="5dip"></Button>
+        <TextView android:layout_height="wrap_content" android:layout_width="140dip" android:id="@+id/localIP" android:text="local IP: 127.0.0.1" android:paddingLeft="10dip"></TextView>
     </LinearLayout>
   
 </LinearLayout>
