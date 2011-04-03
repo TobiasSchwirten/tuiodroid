@@ -51,7 +51,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private OSCInterface oscInterface ;
 	private int counter_fseq = 0;
-	private float cw, ch = 0;
+	private int cw, ch = 0;
+	private int bx, by = 0;
 	
 	public boolean drawAdditionalInfo;
 	public boolean sendPeriodicUpdates;
@@ -61,7 +62,9 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	
 	private long startTime;
 	private long lastTime = 0;
-	
+
+	private Bitmap backgroundImage;
+
 	private boolean running = false;
 	/**
 	 * Constructor
@@ -84,12 +87,14 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		setFocusable(true); // make sure we get key events
 		setFocusableInTouchMode(true); // make sure we get touch events
 
-		textPaint.setColor(Color.LTGRAY);
+		textPaint.setColor(Color.DKGRAY);
 		touchPaint.setColor(Color.rgb(34,68,136));
 		touchPaint.setStrokeWidth(2);
 		touchPaint.setStyle(Style.FILL);
 		touchPaint.setAntiAlias(true);
 		//touchPaint.setAlpha(150);
+		
+		backgroundImage = BitmapFactory.decodeResource(getResources(),R.drawable.up);
 	}
 	
 	/**
@@ -105,9 +110,6 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		//always send on ACTION_DOWN & ACTION_UP
 		if ((event.getAction() == MotionEvent.ACTION_DOWN) ||  (event.getAction() == MotionEvent.ACTION_UP)) dt = 1000;
 
-		cw = getWidth();
-		ch = getHeight();
-		Canvas c = getHolder().lockCanvas();
 		
 		int pointerCount = event.getPointerCount();
 
@@ -117,9 +119,18 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		if (pointerCount > MAX_TOUCHPOINTS) {
 			pointerCount = MAX_TOUCHPOINTS;
 		}
-			
+		
+		cw = getWidth();
+		ch = getHeight();
+		
+		bx = cw/2 - backgroundImage.getWidth()/2;
+		by = ch/2 - backgroundImage.getHeight()/2;
+		
+		Canvas c = getHolder().lockCanvas();
+		
 		if (c != null) {
-			c.drawColor(Color.BLACK);
+			c.drawColor(Color.WHITE);
+			c.drawBitmap(backgroundImage,bx,by,null);
 			
 			if (event.getAction() == MotionEvent.ACTION_UP) {				
 	
@@ -259,8 +270,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 			outputData[2] = (Float) tuioPoints.get(i).getX(); // x KOORD
 			outputData[3] = (Float) tuioPoints.get(i).getY(); // y KOORD
 
-			outputData[4] = (Float) tuioPoints.get(i).getXVel(); // Movementvector X
-			outputData[5] = (Float) tuioPoints.get(i).getYVel(); // Movementvector Y
+			outputData[4] = (Float) tuioPoints.get(i).getXVel(); // Velocity Vector X
+			outputData[5] = (Float) tuioPoints.get(i).getYVel(); // Velocity Vector Y
 
 			outputData[6] = (Float) tuioPoints.get(i).getAccel(); // Acceleration
 
@@ -300,14 +311,18 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		Canvas c = getHolder().lockCanvas();
 		
 		if (c != null) {
+			bx = width/2 - backgroundImage.getWidth()/2;
+			by = height/2 - backgroundImage.getHeight()/2;
 			// clear screen
-			c.drawColor(Color.BLACK);
+			c.drawColor(Color.WHITE);
+			c.drawBitmap(backgroundImage,bx,by,null);
 			getHolder().unlockCanvasAndPost(c);
 		}
 	}
 
 	
 	public void surfaceCreated(SurfaceHolder holder) {
+		
 		running = true;
 		if (sendPeriodicUpdates) {
 		new Thread(new Runnable() {

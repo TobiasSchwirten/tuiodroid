@@ -19,16 +19,13 @@
 
 package tuioDroid.impl;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.app.*;
+import android.content.*;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.*;
 import android.widget.Toast;
-
+import android.hardware.*;
 import java.util.*;
 import java.net.*;
 
@@ -80,7 +77,13 @@ public class MainActivity extends Activity {
 	 */
 	private int screenOrientation;
 	
-	
+	/**
+	 * Detects shaking gesture
+	 */	private SensorManager sensorManager;
+
+	 
+	 private boolean showSettings = false;
+	 
 	/**
 	 *  Called when the activity is first created. 
 	 */
@@ -100,6 +103,8 @@ public class MainActivity extends Activity {
         screenOrientation = settings.getInt ("ScreenOrientation", 0);
         this.adjustScreenOrientation(this.screenOrientation);
         
+        sensorManager = (SensorManager) this.getBaseContext().getSystemService(Context.SENSOR_SERVICE);
+     
         touchView  = new TouchView(this,devIP,oscIP,oscPort,drawAdditionalInfo,sendPeriodicUpdates);
         setContentView(touchView);
     }
@@ -125,7 +130,7 @@ public class MainActivity extends Activity {
      *  Options menu is defined in m.xml 
      */
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu) {   	
     	MenuInflater inflater = getMenuInflater();
     	inflater.inflate(R.menu.m, menu);
     	return true;
@@ -166,6 +171,7 @@ public class MainActivity extends Activity {
     	myIntent.putExtra("ExtraInfo", this.drawAdditionalInfo);
        	myIntent.putExtra("VerboseTUIO", this.sendPeriodicUpdates);
       	myIntent.putExtra("ScreenOrientation", this.screenOrientation);
+      	showSettings = true;
     	startActivityForResult(myIntent, REQUEST_CODE_SETTINGS);
     }
     
@@ -176,6 +182,7 @@ public class MainActivity extends Activity {
     private void openHelpActivity (){
     	Intent myIntent = new Intent();
      	myIntent.setClassName("tuioDroid.impl", "tuioDroid.impl.HelpActivity");
+     	showSettings = true;
      	startActivity(myIntent);  
     }
     
@@ -262,9 +269,39 @@ public class MainActivity extends Activity {
     		case 2: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     		break;
 	
-    		default: 	this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    		default: this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     		break;
     	}	
     }
+    
+    protected void onResume() {
+      super.onResume();
+      sensorManager.registerListener(shakeListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+      showSettings = false;
+    }
+
+    protected void onStop() {
+      sensorManager.unregisterListener(shakeListener);
+      super.onStop();
+    }
+
+    private final SensorEventListener shakeListener = new SensorEventListener() {
+
+        public void onSensorChanged(SensorEvent se) {
+          float x = se.values[0];
+          float y = se.values[1];
+          float z = se.values[2];
+          float shake = x*x + y*y + z*z;
+           
+          if ((!showSettings) && (shake>500)) {
+        	  //android.util.Log.v("Accelerometer",""+shake);
+        	  openSettingsActivity();
+          }
+        }
+
+        public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        }
+      };
+
     
 }
