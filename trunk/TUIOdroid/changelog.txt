@@ -2,7 +2,11 @@ TUIOdroid for Android Changelog
 
 v1.0 0x.04.2011
 ---------------
-* fix network setup 
+* enable full screen
+* add background image
+* shake for settings
+* fix networking setup 
+* check valid inputs
 * remove debug messages
 
 v0.9 02.04.2011

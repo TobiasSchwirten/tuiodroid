@@ -43,8 +43,8 @@ import android.widget.TextView;
  * @author Tobias Schwirten
  * @author Martin Kaltenbrunner
  */
-public class SettingsActivity extends Activity{
 
+public class SettingsActivity extends Activity{
 
 	/**
 	 *  Called when the activity is first created. 
@@ -89,9 +89,8 @@ public class SettingsActivity extends Activity{
 	        else {
 	        	ipView.setTextColor(Color.RED);
 	        	ipView.setText("no active network connection found!");
-	        }
+	        }	        
 	    }
-
 	 
 	    public String getLocalIpAddress() {
 	        try {
