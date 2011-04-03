@@ -47,9 +47,17 @@ public class OSCInterface {
 	private OSCPortOut sender;
 	
 	/**
+	 * Is the IP address reachable?
+	 */
+	private boolean reachable = true;
+	private boolean checkingStatus=false;
+	
+	/**
 	 * Constructor
 	 */
 	public OSCInterface(String host, int port){
+		
+		checkStatus();
 		
 		try {
 			this.inetAdress = InetAddress.getByName(host);
@@ -167,6 +175,22 @@ public class OSCInterface {
 		this.sender.close();
 	}
 
+	public boolean isReachable() {
+	 return reachable;
+	}
 	
-	
+	public synchronized void checkStatus() {
+		if (checkingStatus) return;
+		checkingStatus=true;
+		
+		new Thread(new Runnable() {
+		    public void run() {
+		    	try {  reachable = inetAdress.isReachable(1000); }
+		    	catch (Exception e) { reachable = false; };
+		    	checkingStatus=false;
+		    }
+		  }).start();
+		
+		
+	}	
 }

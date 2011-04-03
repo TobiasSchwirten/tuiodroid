@@ -19,7 +19,11 @@
 
 package tuioDroid.impl;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 
 import com.illposed.osc.OSCBundle;
@@ -66,6 +70,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	private Bitmap backgroundImage;
 
 	private boolean running = false;
+
 	/**
 	 * Constructor
 	 * @param context
@@ -73,7 +78,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @param oscIP
 	 * @param oscPort
 	 */
-	public TouchView(Context context, String devIP, String oscIP, int oscPort, boolean drawAdditionalInfo, boolean sendPeriodicUpdates) {
+	public TouchView(Context context, String oscIP, int oscPort, boolean drawAdditionalInfo, boolean sendPeriodicUpdates) {
 		super(context, null);
 		oscInterface  = new OSCInterface(oscIP , oscPort);
 		this.drawAdditionalInfo = drawAdditionalInfo;
@@ -81,7 +86,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		startTime = System.currentTimeMillis();
 		
 		tuioPoints = new ArrayList<TuioPoint>();
-		sourceName = "TUIOdroid@"+devIP;
+		sourceName = "TUIOdroid@"+getLocalIpAddress();
 		SurfaceHolder holder = getHolder();
 		holder.addCallback(this);
 		setFocusable(true); // make sure we get key events
@@ -110,11 +115,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		//always send on ACTION_DOWN & ACTION_UP
 		if ((event.getAction() == MotionEvent.ACTION_DOWN) ||  (event.getAction() == MotionEvent.ACTION_UP)) dt = 1000;
 
-		
 		int pointerCount = event.getPointerCount();
-
 		//android.util.Log.v("PointerCount",""+pointerCount);
-		//printPointerInfo(event);
 		
 		if (pointerCount > MAX_TOUCHPOINTS) {
 			pointerCount = MAX_TOUCHPOINTS;
@@ -191,47 +193,43 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 						sessionId++;
 					} 
 					
-					if(this.drawAdditionalInfo){
-						int textY = (int) ((15 + 20 * i) * scale);
-						c.drawText("x" + i + "=" + x, 10 * scale, textY, textPaint);
-						c.drawText("y" + i + "=" + y, 115 * scale, textY, textPaint);
+					if(drawAdditionalInfo){
+						int textPos = 5 + (i+1)*(int)(textPaint.getTextSize());
+						c.drawText("x" + i + "=" + (int)Math.round(x) + " y" + i + "=" + (int)Math.round(y), 5, textPos, textPaint);
 					}
 
-				}
-				
-				if(this.drawAdditionalInfo) {
-					c.drawText("Sending TUIO data to: ", 0, height-textPaint.getTextSize(),textPaint );
-					c.drawText(this.oscInterface.getInetAdress() + " / " + this.oscInterface.getPort(), 0, height,textPaint );
-				}
+				}	
 			}
+			
+			if ((!oscInterface.isReachable()) || (drawAdditionalInfo)) drawInfo(c);
 			getHolder().unlockCanvasAndPost(c);
 
 		}
 		
-		if ((!sendPeriodicUpdates) && (dt<1000/FRAME_RATE)) sendTUIOdata();
+		if ((!sendPeriodicUpdates) && (dt<1000/FRAME_RATE) ) sendTUIOdata();
 		return true;
 	}
-
 	
-	public void printPointerInfo(MotionEvent event){
+	private void drawInfo(Canvas c) {
 		
-		System.out.println("Pointer infos (counter: " + event.getPointerCount() + " )");
-		
-		for(int i=0; i<event.getPointerCount(); i++){
-			
-			System.out.println(event.getPointerId(i) + " / " +event.getX(i)+ " / " + event.getY(i));
-			
+		if (!oscInterface.isReachable()) {
+			textPaint.setColor(Color.RED);
+			c.drawText("client not reachable", 5, height-2*textPaint.getTextSize()-5,textPaint );
+			textPaint.setColor(Color.DKGRAY);
 		}
-		System.out.println();
-		
+			
+		String sourceString = "source: "+sourceName;
+		c.drawText(sourceString, 5, height-textPaint.getTextSize()-5,textPaint );
+		String clientString = "TUIO/UDP client: "+this.oscInterface.getInetAdress() + ":" + this.oscInterface.getPort();
+		c.drawText(clientString, 5, height-5,textPaint );
 	}
 	
 	/**
 	 * Sends the TUIO Data
 	 * @param blobList
 	 */
-	public void sendTUIOdata (){
-		
+	public void sendTUIOdata () {
+	
 		OSCBundle oscBundle = new OSCBundle();
 
 		/*
@@ -316,6 +314,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 			// clear screen
 			c.drawColor(Color.WHITE);
 			c.drawBitmap(backgroundImage,bx,by,null);
+			
+			if ((!oscInterface.isReachable()) || (drawAdditionalInfo)) drawInfo(c);
 			getHolder().unlockCanvasAndPost(c);
 		}
 	}
@@ -324,17 +324,34 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceCreated(SurfaceHolder holder) {
 		
 		running = true;
-		if (sendPeriodicUpdates) {
+
 		new Thread(new Runnable() {
 		    public void run() {
+		      boolean network = oscInterface.isReachable();
 		      while (running) {
-		    	  sendTUIOdata();
+		    	  
+    			  oscInterface.checkStatus();
+    			  boolean status = oscInterface.isReachable();
+		    	  if (network!=status) {
+		    		  network = status;
+		    		  sourceName = "TUIOdroid@"+getLocalIpAddress();
+		    		  Canvas c = getHolder().lockCanvas();
+		    		  if (c != null) {
+		    				bx = width/2 - backgroundImage.getWidth()/2;
+		    				by = height/2 - backgroundImage.getHeight()/2;
+		    				c.drawColor(Color.WHITE);
+		    				c.drawBitmap(backgroundImage,bx,by,null);
+		    				if (!network || drawAdditionalInfo) drawInfo(c);
+		    				getHolder().unlockCanvasAndPost(c);
+		    		  }
+		    	  }
+		    	 
+		    	  if (sendPeriodicUpdates) sendTUIOdata();
 		    	  try { Thread.sleep(1000/FRAME_RATE); }
 		    	  catch (Exception e) {}
 		      }
 		    }
-		  }).start();
-		}
+		}).start();
 	}
 	
 
@@ -352,14 +369,26 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	 * @param ip
 	 * @param port
 	 */
-	public void setNewOSCConnection (String ip, int port){	
-		this.oscInterface.closeInteface();
-		this.oscInterface = new OSCInterface(ip,port);
+	public void setNewOSCConnection (String oscIP, int oscPort){	
+		oscInterface.closeInteface();
+		oscInterface = new OSCInterface(oscIP,oscPort);
+		sourceName = "TUIOdroid@"+getLocalIpAddress();
 	}
 
-
-
-
+    public String getLocalIpAddress() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    InetAddress inetAddress = enumIpAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        return inetAddress.getHostAddress().toString();
+                    }
+                }
+            }
+        } catch (SocketException ex) {}
+        return "127.0.0.1";
+    }
 
 	
 	
