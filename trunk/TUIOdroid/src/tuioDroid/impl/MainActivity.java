@@ -26,7 +26,6 @@ import android.os.Bundle;
 import android.view.*;
 import android.widget.Toast;
 import android.hardware.*;
-import java.util.*;
 import java.net.*;
 
 /**
@@ -46,11 +45,6 @@ public class MainActivity extends Activity {
 	 * which child activity calls back
 	 */
 	private static final int REQUEST_CODE_SETTINGS = 0;
-
-	/**
-	 * Device IP Address
-	 */
-	private String devIP;
 	
 	/**
 	 * IP Address for OSC connection
@@ -79,10 +73,11 @@ public class MainActivity extends Activity {
 	
 	/**
 	 * Detects shaking gesture
-	 */	private SensorManager sensorManager;
+	 */	
+	private SensorManager sensorManager;
 
 	 
-	 private boolean showSettings = false;
+	private boolean showSettings = false;
 	 
 	/**
 	 *  Called when the activity is first created. 
@@ -95,7 +90,6 @@ public class MainActivity extends Activity {
         SharedPreferences settings = this.getPreferences(MODE_PRIVATE);
       
         /* get Values */
-        devIP = getLocalIpAddress();
         oscIP = settings.getString("myIP", "192.168.1.2");
         oscPort = settings.getInt("myPort", 3333);
         drawAdditionalInfo = settings.getBoolean("ExtraInfo", false);
@@ -104,25 +98,9 @@ public class MainActivity extends Activity {
         this.adjustScreenOrientation(this.screenOrientation);
         
         sensorManager = (SensorManager) this.getBaseContext().getSystemService(Context.SENSOR_SERVICE);
-     
-        touchView  = new TouchView(this,devIP,oscIP,oscPort,drawAdditionalInfo,sendPeriodicUpdates);
+ 
+        touchView  = new TouchView(this,oscIP,oscPort,drawAdditionalInfo,sendPeriodicUpdates);
         setContentView(touchView);
-    }
-   
-    
-    public String getLocalIpAddress() {
-        try {
-            for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                NetworkInterface intf = en.nextElement();
-                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                    InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
-                        return inetAddress.getHostAddress().toString();
-                    }
-                }
-            }
-        } catch (SocketException ex) {}
-        return null;
     }
     
     /**
@@ -201,9 +179,7 @@ public class MainActivity extends Activity {
         	
         		case RESULT_OK:
         			Bundle dataBundle = data.getExtras(); 
-        		    
-        			if (devIP==null) Toast.makeText(this, "No active network connection found!", Toast.LENGTH_LONG).show();
-        			
+        		            			
         	    	String ip = dataBundle.getString("IP");
         	    	
         	    	try { InetAddress.getByName(ip); } 
@@ -221,7 +197,7 @@ public class MainActivity extends Activity {
             	    this.drawAdditionalInfo = dataBundle.getBoolean("ExtraInfo");
             	    this.sendPeriodicUpdates = dataBundle.getBoolean("VerboseTUIO");
             	    	
-            	    this.touchView.setNewOSCConnection(ip, port);
+            	    this.touchView.setNewOSCConnection(oscIP, oscPort);
             	    this.touchView.drawAdditionalInfo = this.drawAdditionalInfo;
             	    this.touchView.sendPeriodicUpdates = this.sendPeriodicUpdates;
             	    	
@@ -276,13 +252,18 @@ public class MainActivity extends Activity {
     
     protected void onResume() {
       super.onResume();
-      sensorManager.registerListener(shakeListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+      sensorManager.registerListener(shakeListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_FASTEST);
       showSettings = false;
     }
 
     protected void onStop() {
-      sensorManager.unregisterListener(shakeListener);
       super.onStop();
+      sensorManager.unregisterListener(shakeListener);
+    }
+
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(shakeListener);
     }
 
     private final SensorEventListener shakeListener = new SensorEventListener() {
@@ -295,6 +276,7 @@ public class MainActivity extends Activity {
            
           if ((!showSettings) && (shake>500)) {
         	  //android.util.Log.v("Accelerometer",""+shake);
+        	  showSettings = true;
         	  openSettingsActivity();
           }
         }
