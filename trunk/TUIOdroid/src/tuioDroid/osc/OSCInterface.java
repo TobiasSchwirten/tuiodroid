@@ -185,8 +185,12 @@ public class OSCInterface {
 		
 		new Thread(new Runnable() {
 		    public void run() {
-		    	try {  reachable = inetAdress.isReachable(1000); }
-		    	catch (Exception e) { reachable = false; };
+		    	try {  
+		    		long startTime = System.currentTimeMillis();
+		    		reachable = inetAdress.isReachable(1000);
+		    		long sleepTime = 1000 - (System.currentTimeMillis() - startTime);
+		    		if (sleepTime>0) Thread.sleep(sleepTime);
+		    	} catch (Exception e) { reachable = false; };
 		    	checkingStatus=false;
 		    }
 		  }).start();
