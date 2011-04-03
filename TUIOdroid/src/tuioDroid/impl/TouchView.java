@@ -113,7 +113,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		lastTime = timeStamp;
 		
 		//always send on ACTION_DOWN & ACTION_UP
-		if ((event.getAction() == MotionEvent.ACTION_DOWN) ||  (event.getAction() == MotionEvent.ACTION_UP)) dt = 1000;
+		if ((event.getAction() == MotionEvent.ACTION_DOWN) || (event.getAction() == MotionEvent.ACTION_UP)) dt = 1000;
 
 		int pointerCount = event.getPointerCount();
 		//android.util.Log.v("PointerCount",""+pointerCount);
@@ -206,7 +206,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 		}
 		
-		if ((!sendPeriodicUpdates) && (dt<1000/FRAME_RATE) ) sendTUIOdata();
+		if ((!sendPeriodicUpdates) && (dt>(1000/FRAME_RATE)) ) sendTUIOdata();
 		return true;
 	}
 	
@@ -343,7 +343,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		    				c.drawBitmap(backgroundImage,bx,by,null);
 		    				if (!network || drawAdditionalInfo) drawInfo(c);
 		    				getHolder().unlockCanvasAndPost(c);
-		    		  }
+		    		  }		    		  
 		    	  }
 		    	 
 		    	  if (sendPeriodicUpdates) sendTUIOdata();
