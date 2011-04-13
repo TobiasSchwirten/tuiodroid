@@ -46,6 +46,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	private static final int MAX_TOUCHPOINTS = 10;
 	private static final int FRAME_RATE = 40;
 	private Paint textPaint = new Paint();
+	private Paint idPaint = new Paint();
 	private Paint touchPaint = new Paint();
 
 	private ArrayList<TuioPoint> tuioPoints;
@@ -93,6 +94,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		setFocusableInTouchMode(true); // make sure we get touch events
 
 		textPaint.setColor(Color.DKGRAY);
+		idPaint.setColor(Color.LTGRAY);
 		touchPaint.setColor(Color.rgb(34,68,136));
 		touchPaint.setStrokeWidth(2);
 		touchPaint.setStyle(Style.FILL);
@@ -174,7 +176,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 					c.drawLine(0, y, width, y, touchPaint);
 					c.drawLine(x, 0, x, height, touchPaint);
 					c.drawCircle(x, y, 40 * scale, touchPaint);
-					c.drawText("" +id, x, y, textPaint);
+					c.drawText("" +id, x, y, idPaint);
 										
 					/* Check if this touch ID already exists */
 					boolean pointExists = false;
@@ -228,7 +230,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	 * Sends the TUIO Data
 	 * @param blobList
 	 */
-	public void sendTUIOdata () {
+	public void sendTUIOdata () throws ArrayIndexOutOfBoundsException {
 	
 		OSCBundle oscBundle = new OSCBundle();
 
@@ -346,7 +348,10 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		    		  }		    		  
 		    	  }
 		    	 
-		    	  if (sendPeriodicUpdates) sendTUIOdata();
+		    	  if (sendPeriodicUpdates) {
+		    		  try { sendTUIOdata(); }
+		    	  	  catch (Exception e) {}
+		    	  }
 		    	  try { Thread.sleep(1000/FRAME_RATE); }
 		    	  catch (Exception e) {}
 		      }
