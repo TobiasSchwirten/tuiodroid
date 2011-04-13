@@ -56,9 +56,7 @@ public class OSCInterface {
 	 * Constructor
 	 */
 	public OSCInterface(String host, int port){
-		
-		checkStatus();
-		
+				
 		try {
 			this.inetAdress = InetAddress.getByName(host);
 			if (port>1023) this.port = port;			
@@ -72,6 +70,8 @@ public class OSCInterface {
 			catch (Exception e) {}			
 		}
 		
+		checkStatus();
+		
 		try {
 			sender = new OSCPortOut(inetAdress, port);
 		} catch (Exception e) {}
@@ -83,10 +83,10 @@ public class OSCInterface {
 	 */
 	public void sendMessage(List <OSCMessage> oscMessagesList){
 
-         OSCBundle bundle = new OSCBundle(listToArray(oscMessagesList));
+        OSCBundle bundle = new OSCBundle(listToArray(oscMessagesList));
 
-         try {
-			sender.send(bundle);
+        try {
+        	 if (reachable) sender.send(bundle);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -99,7 +99,7 @@ public class OSCInterface {
 	public void sendSingleMessage(OSCMessage oscMessage){
 
 		try {
-			sender.send(oscMessage); 
+			if (reachable) sender.send(oscMessage); 
 			//printOSCData(oscMessage);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -114,7 +114,7 @@ public class OSCInterface {
 	public void sendOSCBundle (OSCBundle bundle){
 	
 		try {
-			sender.send(bundle);
+			if (reachable) sender.send(bundle);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

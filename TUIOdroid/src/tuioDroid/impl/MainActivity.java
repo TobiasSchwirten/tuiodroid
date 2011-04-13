@@ -97,10 +97,10 @@ public class MainActivity extends Activity {
         screenOrientation = settings.getInt ("ScreenOrientation", 0);
         this.adjustScreenOrientation(this.screenOrientation);
         
-        sensorManager = (SensorManager) this.getBaseContext().getSystemService(Context.SENSOR_SERVICE);
- 
         touchView  = new TouchView(this,oscIP,oscPort,drawAdditionalInfo,sendPeriodicUpdates);
         setContentView(touchView);
+        
+        sensorManager = (SensorManager) this.getBaseContext().getSystemService(Context.SENSOR_SERVICE);
     }
     
     /**
