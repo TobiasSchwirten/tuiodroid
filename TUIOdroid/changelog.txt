@@ -1,5 +1,11 @@
 TUIOdroid for Android Changelog
 
+v1.1 13.10.2012
+---------------
+* fixed problem with non reachable clients. Some Firewalls did block reachable check, now the app sends data although the client might not be reachable
+
+
+
 v1.0 0x.04.2011
 ---------------
 * enable full screen
