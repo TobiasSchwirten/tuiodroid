@@ -114,7 +114,9 @@ public class OSCInterface {
 	public void sendOSCBundle (OSCBundle bundle){
 	
 		try {
-			if (reachable) sender.send(bundle);
+			//if (reachable) //Not necessary, does produce problems because firewall could block response although the client does receive 
+			//data
+			sender.send(bundle);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

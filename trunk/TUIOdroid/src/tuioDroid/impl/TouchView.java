@@ -216,7 +216,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		if (!oscInterface.isReachable()) {
 			textPaint.setColor(Color.RED);
-			c.drawText("client not reachable", 5, height-2*textPaint.getTextSize()-5,textPaint );
+			c.drawText("client does not respond, might work though", 5, height-2*textPaint.getTextSize()-5,textPaint );
 			textPaint.setColor(Color.DKGRAY);
 		}
 			
