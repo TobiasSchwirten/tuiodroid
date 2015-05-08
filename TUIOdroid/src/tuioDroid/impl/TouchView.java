@@ -19,11 +19,13 @@
 
 package tuioDroid.impl;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+
 
 
 import com.illposed.osc.OSCBundle;
@@ -99,6 +101,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		touchPaint.setStrokeWidth(2);
 		touchPaint.setStyle(Style.FILL);
 		touchPaint.setAntiAlias(true);
+		touchPaint.setTextSize(0.1f);
 		//touchPaint.setAlpha(150);
 		
 		backgroundImage = BitmapFactory.decodeResource(getResources(),R.drawable.up);
@@ -215,12 +218,13 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	private void drawInfo(Canvas c) {
 		
 		if (!oscInterface.isReachable()) {
-			textPaint.setColor(Color.RED);
-			c.drawText("client does not respond, might work though", 5, height-2*textPaint.getTextSize()-5,textPaint );
-			textPaint.setColor(Color.DKGRAY);
-		}
 			
+			c.drawText("client does not respond, might work though (check Firewall)", 5, height-2*textPaint.getTextSize()-5,textPaint );
+			
+		}
+		
 		String sourceString = "source: "+sourceName;
+	
 		c.drawText(sourceString, 5, height-textPaint.getTextSize()-5,textPaint );
 		String clientString = "TUIO/UDP client: "+this.oscInterface.getInetAdress() + ":" + this.oscInterface.getPort();
 		c.drawText(clientString, 5, height-5,textPaint );
@@ -307,7 +311,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		} else {
 			this.scale = height / 480f;
 		}
-		textPaint.setTextSize(14 * scale);
+		textPaint.setTextSize(10 * scale);
 		Canvas c = getHolder().lockCanvas();
 		
 		if (c != null) {
@@ -337,6 +341,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		    	  if (network!=status) {
 		    		  network = status;
 		    		  sourceName = "TUIOdroid@"+getLocalIpAddress();
+		    		  System.out.println("Source Name: " +sourceName);
 		    		  Canvas c = getHolder().lockCanvas();
 		    		  if (c != null) {
 		    				bx = width/2 - backgroundImage.getWidth()/2;
@@ -381,12 +386,13 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
     public String getLocalIpAddress() {
+    
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
                 NetworkInterface intf = en.nextElement();
                 for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress()) {
+                    if ((!inetAddress.isLoopbackAddress()) && (inetAddress instanceof Inet4Address)) {
                         return inetAddress.getHostAddress().toString();
                     }
                 }
@@ -395,6 +401,24 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
         return "127.0.0.1";
     }
 
+    
+    public void printAllNetworkInterfaces (){
+    	
+    	   try {
+               for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+                   NetworkInterface intf = en.nextElement();
+                   for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                       InetAddress inetAddress = enumIpAddr.nextElement();
+                       System.out.println("Network Interfaces:  " + inetAddress.getHostAddress());
+                       if (inetAddress instanceof Inet4Address) {
+                    	System.out.println("Die letzte war IPV4");   
+                       }
+                  
+                   }
+               }
+           } catch (SocketException ex) {}
+    	
+    }
 	
 	
 	

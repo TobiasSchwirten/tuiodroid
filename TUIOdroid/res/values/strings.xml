@@ -10,7 +10,7 @@
         <string name="host_string">Target IP Address</string>
         <string name="udp_string">Target UDP Port</string>
         <string name="author_string">(c) 2011 by Tobias Schwirten &amp; Martin Kaltenbrunner</string>
-        <string name="help_string">This application sends multitouch events via TUIO/UDP. You can change the target IP address and port number as well as the default screen orientation in the settings dialog. The TUIO verbosity can be increased for the use on unreliable networks. You will find further information about the TUIO protocol and framework at TUIO.org\n\nThe included Java TUIO implementation is based on the JavaOSC library by Chandrasekhar Ramakrishnan.</string>
+        <string name="help_string">This application sends multitouch events via TUIO/UDP. You can change the target IP address and port number as well as the default screen orientation in the settings dialog. The TUIO verbosity can be increased for the use on unreliable networks. You will find further information about the TUIO protocol and framework at TUIO.org \nYou might see an error message \&quot;Client does not respond...\&quot;, this is usually related to firewall settings on client pc and although the message appears, it might work fine as it only indicates that there is no response from the client. \n\nThe included Java TUIO implementation is based on the JavaOSC library by Chandrasekhar Ramakrishnan.</string>
 		<string name="url_string">http://www.tuio.org/</string>
 
 </resources>

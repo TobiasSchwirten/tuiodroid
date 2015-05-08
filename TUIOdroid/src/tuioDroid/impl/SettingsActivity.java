@@ -19,6 +19,7 @@
 
 package tuioDroid.impl;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -98,7 +99,7 @@ public class SettingsActivity extends Activity{
 	                NetworkInterface intf = en.nextElement();
 	                for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
 	                    InetAddress inetAddress = enumIpAddr.nextElement();
-	                    if (!inetAddress.isLoopbackAddress()) {
+	                    if ((!inetAddress.isLoopbackAddress()) && (inetAddress instanceof Inet4Address)) {
 	                        return inetAddress.getHostAddress().toString();
 	                    }
 	                }

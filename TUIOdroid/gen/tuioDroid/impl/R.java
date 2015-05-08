@@ -15,13 +15,14 @@ public final class R {
     }
     public static final class drawable {
         public static final int icon=0x7f020000;
+        public static final int up=0x7f020001;
     }
     public static final class id {
         public static final int aboutLayout=0x7f070002;
         public static final int buttonLayout=0x7f070008;
         public static final int button_Layout=0x7f070016;
-        public static final int cancelButton=0x7f070018;
-        public static final int checkB_ExtraInfo=0x7f070014;
+        public static final int checkB_ExtraInfo=0x7f070015;
+        public static final int checkB_Verbosity=0x7f070014;
         public static final int debug_Layout=0x7f070013;
         public static final int et_IP=0x7f07000c;
         public static final int et_Port=0x7f07000f;
@@ -29,7 +30,7 @@ public final class R {
         public static final int help=0x7f07001a;
         public static final int imageView=0x7f070001;
         public static final int ip_Layout=0x7f07000a;
-        public static final int localIP=0x7f070015;
+        public static final int localIP=0x7f070018;
         public static final int okButton=0x7f070009;
         public static final int orientation_Layout=0x7f070010;
         public static final int port_Layout=0x7f07000d;
