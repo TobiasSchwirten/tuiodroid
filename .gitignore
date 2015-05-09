@@ -1,0 +1,14 @@
+
+TUIOdroid/bin/res/*
+
+TUIOdroid/bin/classes/*
+
+TUIOdroid/bin/dexedLibs/*
+
+TUIOdroid/gen/*
+
+TUIOdroid/bin/AndroidManifest.xml
+
+TUIOdroid/bin/classes.dex
+
+TUIOdroid/bin/resources.ap_
