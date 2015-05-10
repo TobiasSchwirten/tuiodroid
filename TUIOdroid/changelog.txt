@@ -4,6 +4,7 @@ v1.1 10.05.2015
 ---------------
 * fixed problem with non reachable clients. Some Firewalls did block reachable check, now the app sends data although the client might not be reachable
 * supports different screen sizes and device resolutions
+* proper multi-touch implementation
 
 v1.0 03.04.2011
 ---------------
