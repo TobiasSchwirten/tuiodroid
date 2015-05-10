@@ -133,12 +133,6 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		bx = cw/2 - backgroundImage.getWidth()/2;
 		by = ch/2 - backgroundImage.getHeight()/2;
-		
-		Canvas c = getHolder().lockCanvas();
-		
-		if (c != null) {
-			c.drawColor(Color.WHITE);
-			c.drawBitmap(backgroundImage,bx,by,null);
 			
 			if ((event.getActionMasked() == MotionEvent.ACTION_UP) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)) {				
 	
@@ -181,6 +175,11 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 					}
 				}	
 			}
+	
+		Canvas c = getHolder().lockCanvas();	
+		if (c != null) {
+			c.drawColor(Color.WHITE);
+			c.drawBitmap(backgroundImage,bx,by,null);
 			
 			// draw all existing Points
 			for(int i=0; i<tuioPoints.size(); i++) {
