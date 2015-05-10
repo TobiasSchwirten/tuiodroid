@@ -26,7 +26,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
-
+import android.util.DisplayMetrics;
 
 import com.illposed.osc.OSCBundle;
 import com.illposed.osc.OSCMessage;
@@ -219,7 +219,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		
 		if (!oscInterface.isReachable()) {
 			
-			c.drawText("client does not respond, might work though (check Firewall)", 5, height-2*textPaint.getTextSize()-5,textPaint );
+			c.drawText("client does not respond (check Firewall)", 5, height-2*textPaint.getTextSize()-5,textPaint );
 			
 		}
 		
@@ -302,16 +302,19 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	}
 
 	
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+	public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
 		
-		this.width = width;
-		this.height = height;
-		if (width > height) {
-			this.scale = width / 480f;
-		} else {
-			this.scale = height / 480f;
-		}
-		textPaint.setTextSize(10 * scale);
+
+				
+		DisplayMetrics dm = getResources().getDisplayMetrics();
+		this.scale = dm.densityDpi / DisplayMetrics.DENSITY_DEFAULT;
+		this.width = dm.widthPixels;
+		this.height = dm.heightPixels;
+		
+		System.out.println(width+"x"+height+" "+scale);
+		
+		textPaint.setTextSize(12 * scale);
+	    textPaint.setAntiAlias(true);
 		Canvas c = getHolder().lockCanvas();
 		
 		if (c != null) {
