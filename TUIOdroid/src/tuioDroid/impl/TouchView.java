@@ -150,8 +150,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 				int i =  event.getActionIndex();
 				int id = event.getPointerId(i);
-				float x = width * event.getX(i);
-				float y = height * event.getY(i);						
+				float x = event.getX(i);
+				float y = event.getY(i);						
 
 				// add new Point
 				tuioPoints.add(new TuioPoint(sessionId,id,x/cw,y/ch,timeStamp));
@@ -162,8 +162,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 				// update existing Points
 				for (int i = 0; i < pointerCount; i++) {
 					int id = event.getPointerId(i);
-					float x = width * event.getX(i);
-					float y = height * event.getY(i);
+					float x = event.getX(i);
+					float y = event.getY(i);
 										
 					/* Check if this touch ID already exists */
 					for(int j=0; j<tuioPoints.size(); j++){
@@ -183,8 +183,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 			
 			// draw all existing Points
 			for(int i=0; i<tuioPoints.size(); i++) {
-				int x = (int)Math.round(tuioPoints.get(i).getX());
-				int y = (int)Math.round(tuioPoints.get(i).getY());
+				int x = (int)Math.round(tuioPoints.get(i).getX()*this.width);
+				int y = (int)Math.round(tuioPoints.get(i).getY()*this.height);
 				int id = tuioPoints.get(i).getTouchId();
 				
 				c.drawLine(0, y, width, y, touchPaint);
