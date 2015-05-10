@@ -45,8 +45,8 @@ import android.view.*;
  */
 public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	
-	private static final int MAX_TOUCHPOINTS = 10;
-	private static final int FRAME_RATE = 40;
+	//private static final int MAX_TOUCHPOINTS = 12;
+	private static final int FRAME_RATE = 60;
 	private Paint textPaint = new Paint();
 	private Paint idPaint = new Paint();
 	private Paint touchPaint = new Paint();
@@ -115,18 +115,17 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 
 		long timeStamp = System.currentTimeMillis() - startTime;
 		long dt = timeStamp - lastTime;
-		lastTime = timeStamp;
 		
 		//always send on ACTION_DOWN & ACTION_UP
-		if ((event.getActionMasked() == MotionEvent.ACTION_DOWN) || (event.getActionMasked() == MotionEvent.ACTION_UP)) dt = 1000;
-		if ((event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)) dt = 1000;
+		if ((event.getActionMasked() == MotionEvent.ACTION_DOWN) || (event.getActionMasked() == MotionEvent.ACTION_UP) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) || (event.getActionMasked() == MotionEvent.ACTION_POINTER_UP)) dt = 1000;
+		if (dt>(1000/FRAME_RATE)) lastTime = timeStamp;
 
-		int pointerCount = event.getPointerCount();
+		//int pointerCount = event.getPointerCount();
 		//android.util.Log.v("PointerCount",""+pointerCount);
 		
-		if (pointerCount > MAX_TOUCHPOINTS) {
+		/*if (pointerCount > MAX_TOUCHPOINTS) {
 			pointerCount = MAX_TOUCHPOINTS;
-		}
+		}*/
 		
 		cw = getWidth();
 		ch = getHeight();
@@ -160,7 +159,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 			} else if (event.getActionMasked() == MotionEvent.ACTION_MOVE) {
 
 				// update existing Points
-				for (int i = 0; i < pointerCount; i++) {
+				for (int i = 0; i < event.getPointerCount(); i++) {
 					int id = event.getPointerId(i);
 					float x = event.getX(i);
 					float y = event.getY(i);
@@ -175,7 +174,8 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 					}
 				}	
 			}
-	
+			
+		if (dt>(1000/FRAME_RATE)) {
 		Canvas c = getHolder().lockCanvas();	
 		if (c != null) {
 			c.drawColor(Color.WHITE);
@@ -200,7 +200,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 			
 			if ((!oscInterface.isReachable()) || (drawAdditionalInfo)) drawInfo(c);
 			getHolder().unlockCanvasAndPost(c);
-		}
+		} }
 		
 		if ((!sendPeriodicUpdates) && (dt>(1000/FRAME_RATE)) ) sendTUIOdata();
 		return true;
