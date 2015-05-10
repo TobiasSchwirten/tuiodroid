@@ -102,7 +102,6 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		touchPaint.setStyle(Style.FILL);
 		touchPaint.setAntiAlias(true);
 		touchPaint.setTextSize(0.1f);
-		//touchPaint.setAlpha(150);
 		
 		backgroundImage = BitmapFactory.decodeResource(getResources(),R.drawable.up);
 	}
@@ -209,9 +208,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	private void drawInfo(Canvas c) {
 		
 		if (!oscInterface.isReachable()) {
-			
 			c.drawText("client does not respond (check firewall)", 5, height-2*textPaint.getTextSize()-5,textPaint );
-			
 		}
 		
 		String sourceString = "TUIO source: "+sourceName;
@@ -300,7 +297,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		this.width = dm.widthPixels;
 		this.height = dm.heightPixels;
 		
-		System.out.println(width+"x"+height+" "+scale);
+		//System.out.println(width+"x"+height+" "+scale);
 		
 		textPaint.setTextSize(12 * scale);
 	    textPaint.setAntiAlias(true);
@@ -335,7 +332,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 		    	  if (network!=status) {
 		    		  network = status;
 		    		  sourceName = "TUIOdroid@"+getLocalIpAddress();
-		    		  System.out.println("Source Name: " +sourceName);
+		    		  //System.out.println("Source Name: " +sourceName);
 		    		  Canvas c = getHolder().lockCanvas();
 		    		  if (c != null) {
 		    				bx = width/2 - backgroundImage.getWidth()/2;
@@ -362,7 +359,7 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		running = false;
 		tuioPoints.clear();
-		counter_fseq = 0;
+		//counter_fseq = 0;
 		sessionId = 0;
 		startTime = System.currentTimeMillis();
 		lastTime = 0;
@@ -395,30 +392,5 @@ public class TouchView extends SurfaceView implements SurfaceHolder.Callback {
         return "127.0.0.1";
     }
 
-    
-    public void printAllNetworkInterfaces (){
-    	
-    	   try {
-               for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-                   NetworkInterface intf = en.nextElement();
-                   for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-                       InetAddress inetAddress = enumIpAddr.nextElement();
-                       System.out.println("Network Interfaces:  " + inetAddress.getHostAddress());
-                       if (inetAddress instanceof Inet4Address) {
-                    	System.out.println("Die letzte war IPV4");   
-                       }
-                  
-                   }
-               }
-           } catch (SocketException ex) {}
-    	
-    }
-	
-	
-	
-	
-	
-	
-	
 
 }
